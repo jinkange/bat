@@ -7,11 +7,8 @@ try:
     import keyboard
     import threading
     import mss
-
 except Exception as e:
     print(e)
-    input('11')
-    
 running = False
 stopped = False
 # 키 입력 감지 스레드
@@ -27,6 +24,7 @@ def keyboard_listener():
             running = False
             stopped = True
             print("⛔ 매크로 정지됨")
+            init()
             time.sleep(0.5)
 listener_thread = threading.Thread(target=keyboard_listener, daemon=True)
 listener_thread.start()
@@ -93,22 +91,48 @@ def screenshot_all_monitors():
         img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
         return img
 
-# 이미지 매칭 함수
-def find_image_on_screen(template_path, threshold=0.9):
+# # 이미지 매칭 함수
+# def find_image_on_screen(template_path, threshold=0.9):
+#     screenshot = screenshot_all_monitors()
+#     # cv2.imwrite("full_screenshot.png", screenshot)
+#     template = cv2.imread(template_path, cv2.IMREAD_COLOR)
+#     result = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
+#     loc = np.where(result >= threshold)
+#     for pt in zip(*loc[::-1]):
+#         return pt  # 위치 반환
+#     return None
+region = (708, 574, 573, 57)
+def is_image_on_screen_fast(template_path, threshold=0.9):
     screenshot = screenshot_all_monitors()
-    # cv2.imwrite("full_screenshot.png", screenshot)
-    template = cv2.imread(template_path, cv2.IMREAD_COLOR)
+    screenshot_gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
+
+    template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
+
+    result = cv2.matchTemplate(screenshot_gray, template, cv2.TM_CCOEFF_NORMED)
+    max_val = np.max(result)
+    return max_val >= threshold
+
+# 특정 영역에서 이미지가 있는지 판단하는 함수
+def is_image_in_region(template_path, region, threshold=0.9):
+    """
+    template_path: 찾을 이미지 파일 경로
+    region: (x, y, width, height)1281 631
+    threshold: 일치 정도 (0.0 ~ 1.0)
+    """
+    screenshot = pyautogui.screenshot(region=region)
+    screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2GRAY)
+
+    template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
+
     result = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
-    loc = np.where(result >= threshold)
-    for pt in zip(*loc[::-1]):
-        return pt  # 위치 반환
-    return None
+    max_val = np.max(result)
+
+    return max_val >= threshold
 
 # 클릭 함수
 def click_at(pos):
     if pos:
         pyautogui.click(pos)
-        time.sleep(0.5)
 
 # 이미지 경로들
 img_path = "./images/"
@@ -164,7 +188,10 @@ total_profit = 0
 banker_win_count = 0
 player_win_count = 0
 amount = 0
-
+last_restart = ''
+last_restart_bat_size = 0
+isRestart = False
+isPass = False
 def init():
     global waitingCount
     global isWaiting
@@ -200,9 +227,11 @@ while True:
         #목표치 확인
         if total_profit >= 1700:
             print("💰 수익 목표 도달, 데이터 초기화, 3판 대기후 재시작")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             time.sleep(1)
             init()
             restart = True
+            isWaiting = True
             continue
         
         if(isWaiting):
@@ -211,45 +240,61 @@ while True:
         #배팅 대기중에서 항상 걸림
         while (not (find_image_on_all_monitors(images["bet_closed"]) or find_image_on_all_monitors(images["bet_closed2"]))):
             False
-        
+        if stopped:
+            break
         if(restart):
             waitingCount += 1
             isWaiting = True
-            if(waitingCount > 3): 
+            if(waitingCount > 2):
                 restart = False
+                isRestart = True
                 break
-            print(f"💹 3판중 {waitingCount}판 대기중...")
+            print(f"💹 2판중 {waitingCount}판 대기중...")
             
         result = None
         while not result:
-            if find_image_on_screen(images["banker_win"]):
+            if stopped:
+                break
+            if is_image_in_region(images["banker_win"],region):
                 result = "BANKER"
+                last_restart = "PLAYER"
                 batSize = 1.95
+                last_restart_bat_size=2
+                isRestart = False
                 if(not restart): banker_win_count += 1
                 if(player_win_count == banker_win_count): isWaiting= True
                 else: isWaiting= False
-                time.sleep(1)
-            elif find_image_on_screen(images["player_win"]):
+            elif is_image_in_region(images["player_win"],region):
                 result = "PLAYER"
+                last_restart = "BANKER"
                 batSize = 2
+                last_restart_bat_size = 1.95
+                isRestart = False
                 if(not restart): player_win_count += 1
                 if(player_win_count == banker_win_count): isWaiting= True
                 else: isWaiting= False
-                time.sleep(1)
-            elif find_image_on_screen(images["tie"]):
-                result = "TIE"
-                isWaiting = True
-                batSize = 1
-                time.sleep(1)
-        
-        if(not restart): 
-            print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count}")
-        
-        if result == "TIE":
-            print("💹 무승부 → 다음 판 대기")
+            elif is_image_in_region(images["tie"],region):
+                if(isRestart):
+                    print("💹 3판 대기중 무승부 → 직전판 반대 ")
+                    isRestart = False
+                    result = last_restart
+                    batSize = last_restart_bat_size
+                    isWaiting= False
+                else:
+                    result = "TIE"
+                    batSize = 1
+                    print("💹 무승부 → 다음판으로")
+                    print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+                    isPass = True
+                    break
+        if(isPass and isWaiting):
+            isPass = False
             continue
         
-        if(result == bet_target and bet_target != ''):
+        if(not restart): print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count}")
+
+        
+        if(result == bet_target and bet_target != '' and result != "TIE"):
             if(stage <= 1): stage = 1
             elif(stage >= 10): stage = 1
             else: stage -= 1
@@ -260,12 +305,15 @@ while True:
             total_profit = total_profit - amount
             print(f"💹 배팅실패 누적 수익: {total_profit}원")
                 
-        while not find_image_on_screen(images["place_bet"]):
+        while not is_image_in_region(images["place_bet"],region):
             False
-        time.sleep(2)
+        if stopped:
+            break
+        time.sleep(0.2)
         pos = find_image_on_all_monitors('./images/reissued.png')
         if pos:
             print("💹 슈 교체 한턴 쉬기 및 카운팅 초기화")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             banker_win_count = 0
             player_win_count = 0
             bet_target = ''
@@ -273,43 +321,103 @@ while True:
             continue
         if(isWaiting):
             bet_target = ''
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             continue
+
         amount = get_bet_amount(stage)
         if(amount == 1000): click_at(AMOUNT_POS[amount])
         if(amount == 10000): 
-            click_at(AMOUNT_POS[5000]) 
+            click_at(AMOUNT_POS[1000])
         if(amount == 20000): 
-            click_at(AMOUNT_POS[5000])
+            click_at(AMOUNT_POS[1000])
         if(amount == 30000): 
-            click_at(AMOUNT_POS[5000])
+            click_at(AMOUNT_POS[1000])
         if(amount == 40000): 
-            click_at(AMOUNT_POS[5000])
+            click_at(AMOUNT_POS[1000])
+            
+        # if(amount == 1000): click_at(AMOUNT_POS[amount])
+        # if(amount == 10000): 
+        #     click_at(AMOUNT_POS[5000])
+        # if(amount == 20000): 
+        #     click_at(AMOUNT_POS[5000])
+        # if(amount == 30000): 
+        #     click_at(AMOUNT_POS[5000])
+        # if(amount == 40000): 
+        #     click_at(AMOUNT_POS[5000])
         
+        # if(banker_win_count > player_win_count):
+        #     if(amount == 1000): click_at(PLAYER_POS)
+        #     if(amount == 10000): 
+        #         click_at(PLAYER_POS)
+        #         click_at(PLAYER_POS)
+        #     if(amount == 20000): 
+        #         click_at(PLAYER_POS)
+        #         click_at(PLAYER_POS)
+        #         click_at(PLAYER_POS)
+        #         click_at(PLAYER_POS)
+        #     if(amount == 30000): 
+        #         click_at(PLAYER_POS)
+        #         click_at(PLAYER_POS)
+        #         click_at(PLAYER_POS)
+        #         click_at(PLAYER_POS)
+        #         click_at(PLAYER_POS)
+        #         click_at(PLAYER_POS)
+        #     if(amount == 40000): 
+        #         click_at(PLAYER_POS)
+        #         click_at(PLAYER_POS)
+        #         click_at(PLAYER_POS)
+        #         click_at(PLAYER_POS)
+        #         click_at(PLAYER_POS)
+        #         click_at(PLAYER_POS)
+        #         click_at(PLAYER_POS)
+        #         click_at(PLAYER_POS)
+        #     print("🎯PLAYER 배팅 클릭")
+        #     bet_target = "PLAYER"
+        # elif(banker_win_count < player_win_count):
+        #     if(amount == 1000): click_at(BANKER_POS)
+        #     if(amount == 10000): 
+        #         click_at(BANKER_POS)
+        #         click_at(BANKER_POS)
+        #     if(amount == 20000): 
+        #         click_at(BANKER_POS)
+        #         click_at(BANKER_POS)
+        #         click_at(BANKER_POS)
+        #         click_at(BANKER_POS)
+        #     if(amount == 30000): 
+        #         click_at(BANKER_POS)
+        #         click_at(BANKER_POS)
+        #         click_at(BANKER_POS)
+        #         click_at(BANKER_POS)
+        #         click_at(BANKER_POS)
+        #         click_at(BANKER_POS)
+        #     if(amount == 40000): 
+        #         click_at(BANKER_POS)
+        #         click_at(BANKER_POS)
+        #         click_at(BANKER_POS)
+        #         click_at(BANKER_POS)
+        #         click_at(BANKER_POS)
+        #         click_at(BANKER_POS)
+        #         click_at(BANKER_POS)
+        #         click_at(BANKER_POS)
+        #     print("🎯BANKER 배팅 클릭")
+        #     bet_target = "BANKER"
+        # else: 
+        #     if(last_restart == "BANKER"):
+        #         bet_target = last_restart
+        #         click_at(BANKER_POS)
+        #     else:
+        #         bet_target = last_restart
+        #         click_at(PLAYER_POS)
+                
         if(banker_win_count > player_win_count):
             if(amount == 1000): click_at(PLAYER_POS)
             if(amount == 10000): 
                 click_at(PLAYER_POS)
-                click_at(PLAYER_POS)
             if(amount == 20000): 
-                click_at(PLAYER_POS)
-                click_at(PLAYER_POS)
-                click_at(PLAYER_POS)
                 click_at(PLAYER_POS)
             if(amount == 30000): 
                 click_at(PLAYER_POS)
-                click_at(PLAYER_POS)
-                click_at(PLAYER_POS)
-                click_at(PLAYER_POS)
-                click_at(PLAYER_POS)
-                click_at(PLAYER_POS)
             if(amount == 40000): 
-                click_at(PLAYER_POS)
-                click_at(PLAYER_POS)
-                click_at(PLAYER_POS)
-                click_at(PLAYER_POS)
-                click_at(PLAYER_POS)
-                click_at(PLAYER_POS)
-                click_at(PLAYER_POS)
                 click_at(PLAYER_POS)
             print("🎯PLAYER 배팅 클릭")
             bet_target = "PLAYER"
@@ -317,32 +425,24 @@ while True:
             if(amount == 1000): click_at(BANKER_POS)
             if(amount == 10000): 
                 click_at(BANKER_POS)
-                click_at(BANKER_POS)
             if(amount == 20000): 
-                click_at(BANKER_POS)
-                click_at(BANKER_POS)
-                click_at(BANKER_POS)
                 click_at(BANKER_POS)
             if(amount == 30000): 
                 click_at(BANKER_POS)
-                click_at(BANKER_POS)
-                click_at(BANKER_POS)
-                click_at(BANKER_POS)
-                click_at(BANKER_POS)
-                click_at(BANKER_POS)
             if(amount == 40000): 
-                click_at(BANKER_POS)
-                click_at(BANKER_POS)
-                click_at(BANKER_POS)
-                click_at(BANKER_POS)
-                click_at(BANKER_POS)
-                click_at(BANKER_POS)
-                click_at(BANKER_POS)
                 click_at(BANKER_POS)
             print("🎯BANKER 배팅 클릭")
             bet_target = "BANKER"
+        else: 
+            if(last_restart == "BANKER"):
+                bet_target = last_restart
+                click_at(BANKER_POS)
+            else:
+                bet_target = last_restart
+                click_at(PLAYER_POS)
         totalBat += 1
         print(f"🎯 배팅: {bet_target}, 금액: {amount}원, 단계: {stage}단계, 총 배팅: {totalBat}회")
+        print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 
     if stopped:
         break
