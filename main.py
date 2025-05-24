@@ -102,6 +102,7 @@ def screenshot_all_monitors():
 #         return pt  # 위치 반환
 #     return None
 region = (708, 574, 573, 57)
+
 def is_image_on_screen_fast(template_path, threshold=0.9):
     screenshot = screenshot_all_monitors()
     screenshot_gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
@@ -119,7 +120,8 @@ def is_image_in_region(template_path, region, threshold=0.9):
     region: (x, y, width, height)1281 631
     threshold: 일치 정도 (0.0 ~ 1.0)
     """
-    screenshot = pyautogui.screenshot(region=region)
+    # screenshot = pyautogui.screenshot(region=region)
+    screenshot = screenshot_all_monitors()
     screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2GRAY)
 
     template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
@@ -262,6 +264,7 @@ while True:
                 batSize = 1.95
                 last_restart_bat_size=2
                 isRestart = False
+                isPass = False
                 if(not restart): banker_win_count += 1
                 if(player_win_count == banker_win_count): isWaiting= True
                 else: isWaiting= False
@@ -271,6 +274,7 @@ while True:
                 batSize = 2
                 last_restart_bat_size = 1.95
                 isRestart = False
+                isPass = False
                 if(not restart): player_win_count += 1
                 if(player_win_count == banker_win_count): isWaiting= True
                 else: isWaiting= False
@@ -326,7 +330,6 @@ while True:
             continue
         if(isWaiting):
             bet_target = ''
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             continue
 
         amount = get_bet_amount(stage)
