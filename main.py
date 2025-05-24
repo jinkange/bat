@@ -36,52 +36,7 @@ def capture_all_monitors():
         monitor = sct.monitors[0]  # [0]은 모든 모니터를 포함한 가상 화면
         screenshot = np.array(sct.grab(monitor))
         return screenshot[:, :, :3]  # BGR 이미지 반환
-        
 
-def find_image_on_all_monitors(template_path, threshold=0.97):
-    screenshot = capture_all_monitors()
-    template = cv2.imread(template_path, cv2.IMREAD_COLOR)
-
-    if template is None:
-        raise ValueError(f"Template image not found at {template_path}")
-
-    result = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
-    loc = np.where(result >= threshold)
-    
-    for pt in zip(*loc[::-1]):
-        return pt  # 첫 번째 매칭 위치 반환
-
-    return None
-
-def find_image_with_orb(template_path, screenshot_img, match_threshold=9):
-    # 이미지 읽기
-    template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
-    screenshot_gray = cv2.cvtColor(screenshot_img, cv2.COLOR_BGR2GRAY)
-
-    # ORB 객체 생성
-    orb = cv2.ORB_create(nfeatures=500)
-
-    # 특징점 및 디스크립터 추출
-    kp1, des1 = orb.detectAndCompute(template, None)
-    kp2, des2 = orb.detectAndCompute(screenshot_gray, None)
-
-    if des1 is None or des2 is None:
-        return None  # 매칭 불가
-
-    # Brute Force 매칭기
-    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-
-    # 매칭
-    matches = bf.match(des1, des2)
-    matches = sorted(matches, key=lambda x: x.distance)
-    print(len(matches))
-    if len(matches) >= match_threshold:
-        # 좋은 매칭이 충분할 경우: 첫 번째 매칭 포인트의 위치 사용
-        match = matches[0]
-        pt = kp2[match.trainIdx].pt
-        return int(pt[0]), int(pt[1])
-    else:
-        return None
     
 def screenshot_all_monitors():
     with mss.mss() as sct:
@@ -91,27 +46,62 @@ def screenshot_all_monitors():
         img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
         return img
 
-# # 이미지 매칭 함수
-# def find_image_on_screen(template_path, threshold=0.9):
-#     screenshot = screenshot_all_monitors()
-#     # cv2.imwrite("full_screenshot.png", screenshot)
-#     template = cv2.imread(template_path, cv2.IMREAD_COLOR)
-#     result = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
-#     loc = np.where(result >= threshold)
-#     for pt in zip(*loc[::-1]):
-#         return pt  # 위치 반환
-#     return None
-region = (708, 574, 573, 57)
-
-def is_image_on_screen_fast(template_path, threshold=0.9):
-    screenshot = screenshot_all_monitors()
-    screenshot_gray = cv2.cvtColor(screenshot, cv2.COLOR_BGR2GRAY)
-
+def find_image_in_screen(template_path, threshold=0.9):
+    
+    # 1. 전체 스크린샷
+    screen = screenshot_all_monitors()
+    # screen = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2GRAY)
+    # 2. 템플릿 이미지
     template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
 
-    result = cv2.matchTemplate(screenshot_gray, template, cv2.TM_CCOEFF_NORMED)
-    max_val = np.max(result)
-    return max_val >= threshold
+    # 3. 윤곽선 추출
+    screen_edges = cv2.Canny(screen, 50, 150)
+    template_edges = cv2.Canny(template, 50, 150)
+    # 4. 템플릿 매칭
+    result = cv2.matchTemplate(screen_edges, template_edges, cv2.TM_CCOEFF_NORMED)
+    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+    # 5. 기준 이상이면 클릭
+    threshold = 0.7
+    print(max_val)
+    if max_val >= threshold:
+        print(f"✅ Found at {max_loc}, Confidence: {max_val:.2f}")
+    else:
+        print("❌ Not found")
+        return None
+    
+# # 이미지 매칭 함수
+def find_image_on_screen(template_path, threshold=0.99):
+# 1. 전체 스크린샷 캡처
+    screenshot = pyautogui.screenshot()
+    screenshot_np = np.array(screenshot)
+    screenshot_cv = cv2.cvtColor(screenshot_np, cv2.COLOR_RGB2BGR)
+
+    # 2. 템플릿 이미지 불러오기
+    template = cv2.imread(template_path)
+    template_gray = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+    w, h = template_gray.shape[::-1]
+
+    # 3. 스크린샷을 회색으로 변환
+    screen_gray = cv2.cvtColor(screenshot_cv, cv2.COLOR_BGR2GRAY)
+
+    # 4. 템플릿 매칭 수행
+    res = cv2.matchTemplate(screen_gray, template_gray, cv2.TM_CCOEFF_NORMED)
+    threshold = 0.95
+    loc = np.where(res >= threshold)
+    # 5. 결과 판별
+    found = False
+    for pt in zip(*loc[::-1]):
+        found = True
+        break
+
+    # 6. 결과 출력
+    if found:
+        return True
+    else:
+        return False
+
+
+region = (708, 574, 573, 57)
 
 # 특정 영역에서 이미지가 있는지 판단하는 함수
 def is_image_in_region(template_path, region, threshold=0.9):
@@ -120,15 +110,14 @@ def is_image_in_region(template_path, region, threshold=0.9):
     region: (x, y, width, height)1281 631
     threshold: 일치 정도 (0.0 ~ 1.0)
     """
-    # screenshot = pyautogui.screenshot(region=region)
-    screenshot = screenshot_all_monitors()
+    screenshot = pyautogui.screenshot(region=region)
+    # screenshot = screenshot_all_monitors()
     screenshot = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2GRAY)
 
     template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
 
     result = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
     max_val = np.max(result)
-
     return max_val >= threshold
 
 # 클릭 함수
@@ -145,7 +134,7 @@ images = {
     "banker_win": os.path.join(img_path, "banker_win2.png"),
     "player_win": os.path.join(img_path, "player_win2.png"),
     "reissued": os.path.join(img_path, "reissued.png"),
-    "tie": os.path.join(img_path, "tie.png")
+    "tie": os.path.join(img_path, "tie2.png")
 }
 
 # 좌표 예시 (실제 화면에 맞게 조정 필요)
@@ -159,7 +148,6 @@ AMOUNT_POS = {
     100000: (1047, 982),
     500000: (1093, 982),
 }
-
 
 
 # 금액 계산 함수
@@ -194,6 +182,8 @@ last_restart = ''
 last_restart_bat_size = 0
 isRestart = False
 isPass = False
+
+isSuePass = False
 def init():
     global waitingCount
     global isWaiting
@@ -228,23 +218,38 @@ while True:
     while running:
         #목표치 확인
         if total_profit >= 1700:
-            print("💰 수익 목표 도달, 데이터 초기화, 3판 대기후 재시작")
+            print("💰 수익 목표 도달, 데이터 초기화, 2판 대기후 재시작")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             time.sleep(1)
             init()
             restart = True
             isWaiting = True
             continue
-        
+
         if(isWaiting):
             print("💹 관전 대기판...")
-            
-        #배팅 대기중에서 항상 걸림
-        while (not (find_image_on_all_monitors(images["bet_closed"]) or find_image_on_all_monitors(images["bet_closed2"]))):
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+        
+        while True:
             if stopped:
                 break
-        if stopped:
-            break
+            if is_image_in_region(images["bet_closed"], region):
+                break
+            elif is_image_in_region(images["bet_closed2"], region):
+                break
+
+        pos = find_image_on_screen('./images/reissued.png')
+        if pos:
+            print("💹 슈 교체 한턴 쉬기 및 카운팅 초기화")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            banker_win_count = 0
+            player_win_count = 0
+            bet_target = ''
+            isWaiting = True
+            isSuePass = True
+        else:
+            isSuePass = False
+            
         if(restart):
             waitingCount += 1
             isWaiting = True
@@ -253,6 +258,7 @@ while True:
                 isRestart = True
                 break
             print(f"💹 2판중 {waitingCount}판 대기중...")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             
         result = None
         while not result:
@@ -280,7 +286,7 @@ while True:
                 else: isWaiting= False
             elif is_image_in_region(images["tie"],region):
                 if(isRestart):
-                    print("💹 3판 대기중 무승부 → 직전판 반대 ")
+                    print("💹 2판 대기중 무승부 → 직전판 반대 ")
                     isRestart = False
                     result = last_restart
                     batSize = last_restart_bat_size
@@ -297,7 +303,7 @@ while True:
             isPass = False
             continue
         
-        if(not restart): print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count}")
+        if(not (restart or isSuePass)): print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count}")
 
         
         if(result == bet_target and bet_target != '' and result != "TIE"):
@@ -312,14 +318,16 @@ while True:
             total_profit = total_profit - amount
             print(f"💹 배팅실패 누적 수익: {total_profit}원")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+        else:
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
                 
-        while not is_image_in_region(images["place_bet"],region):            
+        while not is_image_in_region(images["place_bet"], region):
             if stopped:
                 break
         if stopped:
             break
-        time.sleep(0.2)
-        pos = find_image_on_all_monitors('./images/reissued.png')
+        time.sleep(0.3)
+        pos = find_image_on_screen('./images/reissued.png')
         if pos:
             print("💹 슈 교체 한턴 쉬기 및 카운팅 초기화")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
@@ -328,7 +336,7 @@ while True:
             bet_target = ''
             isWaiting = True
             continue
-        if(isWaiting):
+        if(isWaiting or isSuePass):
             bet_target = ''
             continue
 
@@ -379,7 +387,6 @@ while True:
         #         click_at(PLAYER_POS)
         #         click_at(PLAYER_POS)
         #         click_at(PLAYER_POS)
-        #     print("🎯PLAYER 배팅 클릭")
         #     bet_target = "PLAYER"
         # elif(banker_win_count < player_win_count):
         #     if(amount == 1000): click_at(BANKER_POS)
@@ -407,7 +414,6 @@ while True:
         #         click_at(BANKER_POS)
         #         click_at(BANKER_POS)
         #         click_at(BANKER_POS)
-        #     print("🎯BANKER 배팅 클릭")
         #     bet_target = "BANKER"
         # else: 
         #     if(last_restart == "BANKER"):
