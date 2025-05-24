@@ -239,7 +239,8 @@ while True:
             
         #배팅 대기중에서 항상 걸림
         while (not (find_image_on_all_monitors(images["bet_closed"]) or find_image_on_all_monitors(images["bet_closed2"]))):
-            False
+            if stopped:
+                break
         if stopped:
             break
         if(restart):
@@ -287,6 +288,7 @@ while True:
                     print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
                     isPass = True
                     break
+                
         if(isPass and isWaiting):
             isPass = False
             continue
@@ -300,13 +302,16 @@ while True:
             else: stage -= 1
             total_profit = total_profit + (amount * batSize) - amount
             print(f"💹 배팅성공 누적 수익: {total_profit}원")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
         elif(result != bet_target and bet_target != '' and result !="TIE"):
             stage += 1
             total_profit = total_profit - amount
             print(f"💹 배팅실패 누적 수익: {total_profit}원")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
                 
-        while not is_image_in_region(images["place_bet"],region):
-            False
+        while not is_image_in_region(images["place_bet"],region):            
+            if stopped:
+                break
         if stopped:
             break
         time.sleep(0.2)
@@ -419,7 +424,6 @@ while True:
                 click_at(PLAYER_POS)
             if(amount == 40000): 
                 click_at(PLAYER_POS)
-            print("🎯PLAYER 배팅 클릭")
             bet_target = "PLAYER"
         elif(banker_win_count < player_win_count):
             if(amount == 1000): click_at(BANKER_POS)
@@ -431,7 +435,6 @@ while True:
                 click_at(BANKER_POS)
             if(amount == 40000): 
                 click_at(BANKER_POS)
-            print("🎯BANKER 배팅 클릭")
             bet_target = "BANKER"
         else: 
             if(last_restart == "BANKER"):
@@ -442,10 +445,9 @@ while True:
                 click_at(PLAYER_POS)
         totalBat += 1
         print(f"🎯 배팅: {bet_target}, 금액: {amount}원, 단계: {stage}단계, 총 배팅: {totalBat}회")
-        print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
 
-    if stopped:
-        break
+        if stopped:
+            break   
 
     # 적절한 sleep 필수
     time.sleep(1)
