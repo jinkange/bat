@@ -29,14 +29,6 @@ def keyboard_listener():
 listener_thread = threading.Thread(target=keyboard_listener, daemon=True)
 listener_thread.start()
 
-
-def capture_all_monitors():
-    with mss.mss() as sct:
-        # 전체 모니터 영역
-        monitor = sct.monitors[0]  # [0]은 모든 모니터를 포함한 가상 화면
-        screenshot = np.array(sct.grab(monitor))
-        return screenshot[:, :, :3]  # BGR 이미지 반환
-
     
 def screenshot_all_monitors():
     with mss.mss() as sct:
@@ -46,28 +38,6 @@ def screenshot_all_monitors():
         img = cv2.cvtColor(img, cv2.COLOR_BGRA2BGR)
         return img
 
-def find_image_in_screen(template_path, threshold=0.9):
-    
-    # 1. 전체 스크린샷
-    screen = screenshot_all_monitors()
-    # screen = cv2.cvtColor(np.array(screenshot), cv2.COLOR_RGB2GRAY)
-    # 2. 템플릿 이미지
-    template = cv2.imread(template_path, cv2.IMREAD_GRAYSCALE)
-
-    # 3. 윤곽선 추출
-    screen_edges = cv2.Canny(screen, 50, 150)
-    template_edges = cv2.Canny(template, 50, 150)
-    # 4. 템플릿 매칭
-    result = cv2.matchTemplate(screen_edges, template_edges, cv2.TM_CCOEFF_NORMED)
-    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
-    # 5. 기준 이상이면 클릭
-    threshold = 0.7
-    print(max_val)
-    if max_val >= threshold:
-        print(f"✅ Found at {max_loc}, Confidence: {max_val:.2f}")
-    else:
-        print("❌ Not found")
-        return None
     
 # # 이미지 매칭 함수
 def find_image_on_screen(template_path, threshold=0.99):
@@ -86,7 +56,7 @@ def find_image_on_screen(template_path, threshold=0.99):
 
     # 4. 템플릿 매칭 수행
     res = cv2.matchTemplate(screen_gray, template_gray, cv2.TM_CCOEFF_NORMED)
-    threshold = 0.95
+    threshold = 0.96
     loc = np.where(res >= threshold)
     # 5. 결과 판별
     found = False
@@ -104,7 +74,7 @@ def find_image_on_screen(template_path, threshold=0.99):
 region = (708, 574, 573, 57)
 
 # 특정 영역에서 이미지가 있는지 판단하는 함수
-def is_image_in_region(template_path, region, threshold=0.9):
+def is_image_in_region(template_path, region, threshold=0.95):
     """
     template_path: 찾을 이미지 파일 경로
     region: (x, y, width, height)1281 631
@@ -184,6 +154,7 @@ isRestart = False
 isPass = False
 
 isSuePass = False
+isSueChange = False
 def init():
     global waitingCount
     global isWaiting
@@ -230,6 +201,15 @@ while True:
             print("💹 관전 대기판...")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
         
+        pos = find_image_on_screen('./images/stop.png')
+        if pos:
+            running = False
+            stopped = True
+            print("⛔ 게임 팅김 매크로 정지됨")
+            init()
+            time.sleep(0.5)
+            break
+            
         while True:
             if stopped:
                 break
@@ -237,18 +217,17 @@ while True:
                 break
             elif is_image_in_region(images["bet_closed2"], region):
                 break
-
-        pos = find_image_on_screen('./images/reissued.png')
-        if pos:
-            print("💹 슈 교체 한턴 쉬기 및 카운팅 초기화")
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-            banker_win_count = 0
-            player_win_count = 0
-            bet_target = ''
-            isWaiting = True
-            isSuePass = True
+        if(not isSueChange):
+            pos = find_image_on_screen('./images/reissued.png')
+            if pos:
+                print("💹 슈 교체 한턴 쉬기 및 카운팅 초기화")
+                print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+                banker_win_count = 0
+                player_win_count = 0
+                bet_target = ''
+                isWaiting= True
         else:
-            isSuePass = False
+            isSueChange = False
             
         if(restart):
             waitingCount += 1
@@ -303,16 +282,16 @@ while True:
             isPass = False
             continue
         
-        if(not (restart or isSuePass)): print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count}")
-
+        if(not (restart)): print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count}")
         
         if(result == bet_target and bet_target != '' and result != "TIE"):
             if(stage <= 1): stage = 1
-            elif(stage >= 10): stage = 1
+            elif(stage == 11): stage = 1
             else: stage -= 1
             total_profit = total_profit + (amount * batSize) - amount
             print(f"💹 배팅성공 누적 수익: {total_profit}원")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            if(total_profit >= 1700): continue
         elif(result != bet_target and bet_target != '' and result !="TIE"):
             stage += 1
             total_profit = total_profit - amount
@@ -335,8 +314,9 @@ while True:
             player_win_count = 0
             bet_target = ''
             isWaiting = True
+            isSueChange = True
             continue
-        if(isWaiting or isSuePass):
+        if(isWaiting):
             bet_target = ''
             continue
 
