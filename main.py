@@ -21,9 +21,11 @@ def keyboard_listener():
             print("✅ 매크로 시작됨")
             time.sleep(0.5)
         elif keyboard.is_pressed('2'):
+            global hole_total_profit
             running = False
             stopped = True
             print("⛔ 매크로 정지됨")
+            hole_total_profit= 0
             init()
             time.sleep(0.5)
 listener_thread = threading.Thread(target=keyboard_listener, daemon=True)
@@ -145,14 +147,16 @@ batSize = 0
 bet_target = ''
 stage = 1
 total_profit = 0
+hole_total_profit = 0
 banker_win_count = 0
 player_win_count = 0
 amount = 0
 last_restart = ''
 last_restart_bat_size = 0
 isRestart = False
+isSueRestart = False
 isPass = False
-
+isSueRestartChange = False
 isSuePass = False
 isSueChange = False
 def init():
@@ -160,15 +164,19 @@ def init():
     global isWaiting
     global totalBat
     global batSize
+    global isRestart
+    global isSueRestart
+    
     global bet_target
     global stage
     global total_profit
     global banker_win_count
     global player_win_count
     global amount
-    
+    isRestart = False
     waitingCount = 0
     isWaiting = True
+    isSueRestart =False
     totalBat = 0
     batSize = 0
     bet_target = ''
@@ -188,7 +196,8 @@ while True:
     # 매크로 루프 시작
     while running:
         #목표치 확인
-        if total_profit >= 1700:
+        
+        if total_profit >= 1200:
             print("💰 수익 목표 도달, 데이터 초기화, 2판 대기후 재시작")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             time.sleep(1)
@@ -196,6 +205,19 @@ while True:
             restart = True
             isWaiting = True
             continue
+        
+        if hole_total_profit >= 20000:
+            print("💰 누적 목표 수익 도달, 매크로 정지")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            time.sleep(1)
+            running = False
+            stopped = True
+            print("⛔ 매크로 정지됨")
+            hole_total_profit= 0
+            init()
+            time.sleep(0.5)
+            continue
+        
 
         if(isWaiting):
             print("💹 관전 대기판...")
@@ -217,17 +239,6 @@ while True:
                 break
             elif is_image_in_region(images["bet_closed2"], region):
                 break
-        if(not isSueChange):
-            pos = find_image_on_screen('./images/reissued.png')
-            if pos:
-                print("💹 슈 교체 한턴 쉬기 및 카운팅 초기화")
-                print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-                banker_win_count = 0
-                player_win_count = 0
-                bet_target = ''
-                isWaiting= True
-        else:
-            isSueChange = False
             
         if(restart):
             waitingCount += 1
@@ -235,9 +246,27 @@ while True:
             if(waitingCount > 2):
                 restart = False
                 isRestart = True
+                isSueRestartChange = True
                 break
             print(f"💹 2판중 {waitingCount}판 대기중...")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            
+        
+        if(not restart):
+            if(not isSueRestartChange):
+                if(not isSueChange):
+                    pos = find_image_on_screen('./images/reissued.png')
+                    if pos:
+                        print("💹 슈 교체 한턴 쉬기 및 카운팅 초기화")
+                        print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+                        banker_win_count = 0
+                        player_win_count = 0
+                        bet_target = ''
+                        isWaiting= True
+                else:
+                    isSueChange = False
+            else:
+                isSueRestartChange = False
             
         result = None
         while not result:
@@ -282,20 +311,25 @@ while True:
             isPass = False
             continue
         
-        if(not (restart)): print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count}")
-        
         if(result == bet_target and bet_target != '' and result != "TIE"):
             if(stage <= 1): stage = 1
             elif(stage == 11): stage = 1
             else: stage -= 1
             total_profit = total_profit + (amount * batSize) - amount
-            print(f"💹 배팅성공 누적 수익: {total_profit}원")
+            hole_total_profit =  hole_total_profit + (amount * batSize) - amount
+            if(not (restart)): print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count} (승리)")
+            print(f"💹 누적 수익: {total_profit}원 / 총 수익: {hole_total_profit}원")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-            if(total_profit >= 1700): continue
+            if(total_profit >= 1200): continue
+            if(hole_total_profit >= 20000): continue
+            hole_total_profit
         elif(result != bet_target and bet_target != '' and result !="TIE"):
             stage += 1
             total_profit = total_profit - amount
-            print(f"💹 배팅실패 누적 수익: {total_profit}원")
+            hole_total_profit =  hole_total_profit - amount
+            if(not (restart)): print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count} (패배)")
+            print(f"💹 누적 수익: {total_profit}원")
+            print(f"💹 누적 수익: {total_profit}원 / 총 수익: {hole_total_profit}원")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
         else:
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
@@ -307,15 +341,19 @@ while True:
             break
         time.sleep(0.3)
         pos = find_image_on_screen('./images/reissued.png')
-        if pos:
-            print("💹 슈 교체 한턴 쉬기 및 카운팅 초기화")
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-            banker_win_count = 0
-            player_win_count = 0
-            bet_target = ''
-            isWaiting = True
-            isSueChange = True
-            continue
+        if(not restart):
+            if(not isSueRestartChange):
+                if pos:
+                    print("💹 슈 교체 한턴 쉬기 및 카운팅 초기화")
+                    print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+                    banker_win_count = 0
+                    player_win_count = 0
+                    bet_target = ''
+                    isWaiting = True
+                    isSueChange = True
+                    continue
+            else:
+                isSueRestartChange = False
         if(isWaiting):
             bet_target = ''
             continue
