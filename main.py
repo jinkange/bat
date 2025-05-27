@@ -206,7 +206,7 @@ while True:
             isWaiting = True
             continue
         
-        if hole_total_profit >= 20000:
+        if hole_total_profit >= 13500:
             print("💰 누적 목표 수익 도달, 매크로 정지")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             time.sleep(1)
@@ -321,17 +321,17 @@ while True:
             print(f"💹 누적 수익: {total_profit}원 / 총 수익: {hole_total_profit}원")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             if(total_profit >= 1200): continue
-            if(hole_total_profit >= 20000): continue
+            if(hole_total_profit >= 13500): continue
             hole_total_profit
         elif(result != bet_target and bet_target != '' and result !="TIE"):
             stage += 1
             total_profit = total_profit - amount
             hole_total_profit =  hole_total_profit - amount
             if(not (restart)): print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count} (패배)")
-            print(f"💹 누적 수익: {total_profit}원")
             print(f"💹 누적 수익: {total_profit}원 / 총 수익: {hole_total_profit}원")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
         else:
+            if(not (restart)): print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count} (관전)")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
                 
         while not is_image_in_region(images["place_bet"], region):
@@ -339,7 +339,7 @@ while True:
                 break
         if stopped:
             break
-        time.sleep(0.3)
+        time.sleep(1)
         pos = find_image_on_screen('./images/reissued.png')
         if(not restart):
             if(not isSueRestartChange):
