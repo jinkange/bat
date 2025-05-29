@@ -129,11 +129,7 @@ def get_bet_amount(stage):
     elif 11 <= stage <= 20:
         return 10000
     elif 21 <= stage <= 30:
-        return 20000
-    elif 31 <= stage <= 40:
-        return 30000
-    elif 41 <= stage <= 50:
-        return 40000
+        return 100000
     else:
         return 0
 
@@ -159,6 +155,7 @@ isPass = False
 isSueRestartChange = False
 isSuePass = False
 isSueChange = False
+totalWinCount = 0
 def init():
     global waitingCount
     global isWaiting
@@ -173,6 +170,7 @@ def init():
     global banker_win_count
     global player_win_count
     global amount
+    global totalWinCount
     isRestart = False
     waitingCount = 0
     isWaiting = True
@@ -185,7 +183,10 @@ def init():
     banker_win_count = 0
     player_win_count = 0
     amount = 0
-print("✅ 11단계 이상 1만원씩 배팅상향 배팅(1000원 TEST) ver1.0.0")    
+    totalWinCount = 0
+TURN_FINISH_PRICE = 1200
+GAME_FINISH_PRICE = 9500
+print("✅ 21단계 이상 10만원배팅(1000원 TEST) ver1.0.0")    
 print("▶ 1번을 누르면 시작, 2번을 누르면 정지")
 
 while True:
@@ -197,7 +198,7 @@ while True:
     while running:
         #목표치 확인
         
-        if total_profit >= 1200:
+        if total_profit >= TURN_FINISH_PRICE:
             print("💰 수익 목표 도달, 데이터 초기화, 2판 대기후 재시작")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             time.sleep(1)
@@ -206,7 +207,7 @@ while True:
             isWaiting = True
             continue
         
-        if hole_total_profit >= 13500:
+        if hole_total_profit >= GAME_FINISH_PRICE:
             print("💰 누적 목표 수익 도달, 매크로 정지")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             time.sleep(1)
@@ -218,7 +219,7 @@ while True:
             time.sleep(0.5)
             continue
         
-        if stage >= 51:
+        if stage >= 31:
             print("💰 손절 스테이지 도달, 매크로 정지")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             time.sleep(1)
@@ -229,6 +230,7 @@ while True:
             init()
             time.sleep(0.5)
             continue
+        
         if(isWaiting):
             print("💹 관전 대기판...")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
@@ -322,6 +324,7 @@ while True:
             continue
         
         if(result == bet_target and bet_target != '' and result != "TIE"):
+            if(stage > 20): totalWinCount +=1
             if(stage <= 1): stage = 1
             elif(stage == 11): stage = 1
             else: stage -= 1
@@ -330,10 +333,19 @@ while True:
             if(not (restart)): print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count} (승리)")
             print(f"💹 누적 수익: {total_profit}원 / 총 수익: {hole_total_profit}원")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-            if(total_profit >= 1200): continue
-            if(hole_total_profit >= 13500): continue
+            if(totalWinCount >= 1):
+                print("💹 10만원판 1판 승리 데이터 초기화, 2판 대기후 재시작")
+                print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+                time.sleep(1)
+                init()
+                restart = True
+                isWaiting = True
+                continue
+            if(total_profit >= TURN_FINISH_PRICE): continue
+            if(hole_total_profit >= GAME_FINISH_PRICE): continue
             hole_total_profit
         elif(result != bet_target and bet_target != '' and result !="TIE"):
+            if(stage > 20): totalWinCount -=1
             stage += 1
             total_profit = total_profit - amount
             hole_total_profit =  hole_total_profit - amount
@@ -372,75 +384,51 @@ while True:
         if(amount == 1000): click_at(AMOUNT_POS[amount])
         if(amount == 10000): 
             click_at(AMOUNT_POS[1000])
-        if(amount == 20000): 
+        if(amount == 100000): 
             click_at(AMOUNT_POS[1000])
-        if(amount == 30000): 
-            click_at(AMOUNT_POS[1000])
-        if(amount == 40000): 
-            click_at(AMOUNT_POS[1000])
+
             
+        if(banker_win_count > player_win_count):
+            if(amount == 1000): click_at(PLAYER_POS)
+            if(amount == 10000): 
+                click_at(PLAYER_POS)
+            if(amount == 100000): 
+                click_at(PLAYER_POS)
+            bet_target = "PLAYER"
+        elif(banker_win_count < player_win_count):
+            if(amount == 1000): click_at(BANKER_POS)
+            if(amount == 10000): 
+                click_at(BANKER_POS)
+            if(amount == 100000): 
+                click_at(BANKER_POS)
+            bet_target = "BANKER"
+        else: 
+            if(last_restart == "BANKER"):
+                bet_target = last_restart
+                click_at(BANKER_POS)
+            else:
+                bet_target = last_restart
+                click_at(PLAYER_POS)
+
+
         # if(amount == 1000): click_at(AMOUNT_POS[amount])
         # if(amount == 10000): 
         #     click_at(AMOUNT_POS[5000])
-        # if(amount == 20000): 
-        #     click_at(AMOUNT_POS[5000])
-        # if(amount == 30000): 
-        #     click_at(AMOUNT_POS[5000])
-        # if(amount == 40000): 
-        #     click_at(AMOUNT_POS[5000])
+        # if(amount == 100000): 
+        #     click_at(AMOUNT_POS[100000])
         
         # if(banker_win_count > player_win_count):
         #     if(amount == 1000): click_at(PLAYER_POS)
         #     if(amount == 10000): 
         #         click_at(PLAYER_POS)
-        #         click_at(PLAYER_POS)
-        #     if(amount == 20000): 
-        #         click_at(PLAYER_POS)
-        #         click_at(PLAYER_POS)
-        #         click_at(PLAYER_POS)
-        #         click_at(PLAYER_POS)
-        #     if(amount == 30000): 
-        #         click_at(PLAYER_POS)
-        #         click_at(PLAYER_POS)
-        #         click_at(PLAYER_POS)
-        #         click_at(PLAYER_POS)
-        #         click_at(PLAYER_POS)
-        #         click_at(PLAYER_POS)
-        #     if(amount == 40000): 
-        #         click_at(PLAYER_POS)
-        #         click_at(PLAYER_POS)
-        #         click_at(PLAYER_POS)
-        #         click_at(PLAYER_POS)
-        #         click_at(PLAYER_POS)
-        #         click_at(PLAYER_POS)
-        #         click_at(PLAYER_POS)
+        #     if(amount == 100000): 
         #         click_at(PLAYER_POS)
         #     bet_target = "PLAYER"
         # elif(banker_win_count < player_win_count):
         #     if(amount == 1000): click_at(BANKER_POS)
         #     if(amount == 10000): 
         #         click_at(BANKER_POS)
-        #         click_at(BANKER_POS)
-        #     if(amount == 20000): 
-        #         click_at(BANKER_POS)
-        #         click_at(BANKER_POS)
-        #         click_at(BANKER_POS)
-        #         click_at(BANKER_POS)
-        #     if(amount == 30000): 
-        #         click_at(BANKER_POS)
-        #         click_at(BANKER_POS)
-        #         click_at(BANKER_POS)
-        #         click_at(BANKER_POS)
-        #         click_at(BANKER_POS)
-        #         click_at(BANKER_POS)
-        #     if(amount == 40000): 
-        #         click_at(BANKER_POS)
-        #         click_at(BANKER_POS)
-        #         click_at(BANKER_POS)
-        #         click_at(BANKER_POS)
-        #         click_at(BANKER_POS)
-        #         click_at(BANKER_POS)
-        #         click_at(BANKER_POS)
+        #     if(amount == 100000): 
         #         click_at(BANKER_POS)
         #     bet_target = "BANKER"
         # else: 
@@ -451,35 +439,7 @@ while True:
         #         bet_target = last_restart
         #         click_at(PLAYER_POS)
                 
-        if(banker_win_count > player_win_count):
-            if(amount == 1000): click_at(PLAYER_POS)
-            if(amount == 10000): 
-                click_at(PLAYER_POS)
-            if(amount == 20000): 
-                click_at(PLAYER_POS)
-            if(amount == 30000): 
-                click_at(PLAYER_POS)
-            if(amount == 40000): 
-                click_at(PLAYER_POS)
-            bet_target = "PLAYER"
-        elif(banker_win_count < player_win_count):
-            if(amount == 1000): click_at(BANKER_POS)
-            if(amount == 10000): 
-                click_at(BANKER_POS)
-            if(amount == 20000): 
-                click_at(BANKER_POS)
-            if(amount == 30000): 
-                click_at(BANKER_POS)
-            if(amount == 40000): 
-                click_at(BANKER_POS)
-            bet_target = "BANKER"
-        else: 
-            if(last_restart == "BANKER"):
-                bet_target = last_restart
-                click_at(BANKER_POS)
-            else:
-                bet_target = last_restart
-                click_at(PLAYER_POS)
+                
         totalBat += 1
         print(f"🎯 배팅: {bet_target}, 금액: {amount}원, 단계: {stage}단계, 총 배팅: {totalBat}회")
 
