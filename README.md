@@ -2,6 +2,9 @@ pip install pyautogui
 pip install keyboard
 pip install mss
 pyinstaller --onefile --hidden-import=cv2 main.py 
+pyinstaller --onefile --hidden-import=cv2 banker2.py
+pyinstaller --onefile --hidden-import=cv2 banker3.py
+
 - 매크로 기능정의서
 1. 기본 규칙
   1.1 배팅 뱅커, 플레이어 선택은 나온횟수가 적은곳을 선택

@@ -58,7 +58,7 @@ def find_image_on_screen(template_path, threshold=0.99):
 
     # 4. 템플릿 매칭 수행
     res = cv2.matchTemplate(screen_gray, template_gray, cv2.TM_CCOEFF_NORMED)
-    threshold = 0.96
+    threshold = 0.99
     loc = np.where(res >= threshold)
     # 5. 결과 판별
     found = False
@@ -186,8 +186,9 @@ def init():
     amount = 0
     
 TURN_FINISH_PRICE = 1200
-GAME_FINISH_PRICE = 9500
-print("✅ 21단계 이상 5만원배팅(1000원 TEST) ver1.0.0")    
+GAME_FINISH_PRICE = 2300
+# print("✅ 21단계 이상 5만원배팅(1000원 TEST) ver1.0.0")
+print("✅ 21단계 이상 5만원배팅 ver1.0.0")    
 print("▶ 1번을 누르면 시작, 2번을 누르면 정지")
 
 while True:
@@ -387,58 +388,25 @@ while True:
             continue
 
         amount = get_bet_amount(stage)
-        if(amount == 1000): click_at(AMOUNT_POS[amount])
-        if(amount == 10000): 
-            click_at(AMOUNT_POS[1000])
-        if(amount == 50000): 
-            click_at(AMOUNT_POS[1000])
-
-            
-        if(banker_win_count > player_win_count):
-            if(amount == 1000): click_at(PLAYER_POS)
-            if(amount == 10000): 
-                click_at(PLAYER_POS)
-            if(amount == 50000): 
-                click_at(PLAYER_POS)
-            bet_target = "PLAYER"
-        elif(banker_win_count < player_win_count):
-            if(amount == 1000): click_at(BANKER_POS)
-            if(amount == 10000): 
-                click_at(BANKER_POS)
-            if(amount == 50000): 
-                click_at(BANKER_POS)
-            bet_target = "BANKER"
-        else: 
-            if(last_restart == "BANKER"):
-                bet_target = last_restart
-                click_at(BANKER_POS)
-            else:
-                bet_target = last_restart
-                click_at(PLAYER_POS)
-
-                
+        
+        # #1000원 고정 테스트
         # if(amount == 1000): click_at(AMOUNT_POS[amount])
         # if(amount == 10000): 
-        #     click_at(AMOUNT_POS[5000])
+        #     click_at(AMOUNT_POS[1000])
         # if(amount == 50000): 
-        #     click_at(AMOUNT_POS[25000])
-        
+        #     click_at(AMOUNT_POS[1000])
         # if(banker_win_count > player_win_count):
         #     if(amount == 1000): click_at(PLAYER_POS)
         #     if(amount == 10000): 
         #         click_at(PLAYER_POS)
-        #         click_at(PLAYER_POS)
         #     if(amount == 50000): 
-        #         click_at(PLAYER_POS)
         #         click_at(PLAYER_POS)
         #     bet_target = "PLAYER"
         # elif(banker_win_count < player_win_count):
         #     if(amount == 1000): click_at(BANKER_POS)
         #     if(amount == 10000): 
         #         click_at(BANKER_POS)
-        #         click_at(BANKER_POS)
         #     if(amount == 50000): 
-        #         click_at(BANKER_POS)
         #         click_at(BANKER_POS)
         #     bet_target = "BANKER"
         # else: 
@@ -448,6 +416,39 @@ while True:
         #     else:
         #         bet_target = last_restart
         #         click_at(PLAYER_POS)
+
+                
+        if(amount == 1000): click_at(AMOUNT_POS[amount])
+        if(amount == 10000): 
+            click_at(AMOUNT_POS[5000])
+        if(amount == 50000): 
+            click_at(AMOUNT_POS[25000])
+        
+        if(banker_win_count > player_win_count):
+            if(amount == 1000): click_at(PLAYER_POS)
+            if(amount == 10000): 
+                click_at(PLAYER_POS)
+                click_at(PLAYER_POS)
+            if(amount == 50000): 
+                click_at(PLAYER_POS)
+                click_at(PLAYER_POS)
+            bet_target = "PLAYER"
+        elif(banker_win_count < player_win_count):
+            if(amount == 1000): click_at(BANKER_POS)
+            if(amount == 10000): 
+                click_at(BANKER_POS)
+                click_at(BANKER_POS)
+            if(amount == 50000): 
+                click_at(BANKER_POS)
+                click_at(BANKER_POS)
+            bet_target = "BANKER"
+        else: 
+            if(last_restart == "BANKER"):
+                bet_target = last_restart
+                click_at(BANKER_POS)
+            else:
+                bet_target = last_restart
+                click_at(PLAYER_POS)
                 
         
         totalBat += 1
