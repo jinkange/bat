@@ -303,6 +303,11 @@ while True:
         #     break
             
         if(restart):
+            print(f"💹 2판중 {waitingCount}판 대기중...")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            while not is_image_in_region(images["bet_closed"], open_region):
+                if stopped:
+                    break
             waitingCount += 1
             isWaiting = True
             if(waitingCount > 2):
@@ -310,8 +315,7 @@ while True:
                 isRestart = True
                 isSueRestartChange = True
                 break
-            print(f"💹 2판중 {waitingCount}판 대기중...")
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            
             
         
         if(not restart):
@@ -367,6 +371,7 @@ while True:
                     print("💹 무승부 → 다음판으로")
                     print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
                     isPass = True
+                    time.sleep(2)
                     break
                 
         if(isPass and isWaiting):
@@ -400,13 +405,15 @@ while True:
         else:
             if(not (restart)): print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count} (관전)")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+        
+        time.sleep(1)
                 
         while not is_image_in_region(images["place_bet"], open_region):
             if stopped:
                 break
         if stopped:
             break
-        time.sleep(1)
+        
         pos = is_image_in_region(images["reissued"], sue_region)
         if(not restart):
             if(not isSueRestartChange):
