@@ -279,6 +279,7 @@ while True:
             time.sleep(1)
             running = False
             stopped = True
+            restart = False
             print("⛔ 매크로 정지됨")
             beep_alert()
             hole_total_profit= 0
@@ -393,6 +394,7 @@ while True:
             if(not (restart)): print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count} (승리)")
             print(f"💹 누적 수익: {total_profit}원 / 총 수익: {hole_total_profit}원")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            if(hole_total_profit >= GAME_FINISH_PRICE): continue
             if total_profit >= TURN_FINISH_PRICE:
                 print("💰 수익 목표 도달, 데이터 초기화, 2판 대기후 재시작")
                 print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
@@ -401,7 +403,6 @@ while True:
                 restart = True
                 isWaiting = True
                 continue
-            if(hole_total_profit >= GAME_FINISH_PRICE): continue
         elif(result != bet_target and bet_target != '' and result !="TIE"):
             stage += 1
             total_profit = total_profit - amount
