@@ -228,9 +228,9 @@ while True:
         is_image_in_region(images["banker_win"],bet_region)
         is_image_in_region(images["player_win"],bet_region)
         is_image_in_region(images["tie"],bet_region)
-        is_image_in_region(images["bet_closed"],bet_region)
-        is_image_in_region(images["place_bet"],bet_region)
-        is_image_in_region(images["reissued"],bet_region)
+        is_image_in_region(images["bet_closed"],wat_region)
+        is_image_in_region(images["place_bet"],open_region)
+        is_image_in_region(images["reissued"],sue_region)
         continue
         #목표치 확인
         if hole_total_profit >= GAME_FINISH_PRICE:
