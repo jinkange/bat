@@ -240,7 +240,7 @@ def place_bet(target_pos, amount):
             pyautogui.click(target_pos)
             time.sleep(0.1)
 def beep_alert():
-    for _ in range(6):  # 삐비 삐비 2번
+    for _ in range(5):  # 삐비 삐비 2번
         winsound.Beep(1000, 150)  # 주파수: 1000Hz, 지속시간: 150ms
         winsound.Beep(1500, 150)
 
@@ -256,6 +256,7 @@ def get_integer_input(prompt):
 TURN_FINISH_PRICE = get_integer_input("💰 판당 목표 수익 금액을 입력하세요 (예: -50): ")
 GAME_FINISH_PRICE = get_integer_input("🛑 매크로 정지 수익 금액을 입력하세요 (예: 850): ")
 print(f"판당 목표 수익 : {TURN_FINISH_PRICE} / 매크로 정지수익 : {GAME_FINISH_PRICE}")
+beep_alert()
 
 while True:
     if not running:
@@ -280,7 +281,6 @@ while True:
             running = False
             stopped = True
             print("⛔ 매크로 정지됨")
-            beep_alert()
             hole_total_profit= 0
             init()
             time.sleep(0.5)
