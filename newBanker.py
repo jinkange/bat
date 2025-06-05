@@ -237,8 +237,8 @@ def get_integer_input(prompt):
 
 # 매크로 시작 시 입력 받기
 TURN_FINISH_PRICE = get_integer_input("💰 판당 목표 수익 금액을 입력하세요 (예: -50): ")
-GAME_FINISH_PRICE = get_integer_input("🛑 매크로 정지 수익금액을 입력하세요 (예: 850): ")
-
+GAME_FINISH_PRICE = get_integer_input("🛑 매크로 정지 수익 금액을 입력하세요 (예: 850): ")
+print(f"판당 목표 수익 : {TURN_FINISH_PRICE} / 매크로 정지수익 : {GAME_FINISH_PRICE}")
 beep_alert()
 
 while True:
