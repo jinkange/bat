@@ -43,13 +43,21 @@ def keyboard_listener():
 listener_thread = threading.Thread(target=keyboard_listener, daemon=True)
 listener_thread.start()
 
-def set_console_position_and_size(x, y, width, height):
+def set_console_window(x=1360, y=160, width=570, height=330, always_on_top=True):
     hwnd = ctypes.windll.kernel32.GetConsoleWindow()
     if hwnd:
         win32gui.MoveWindow(hwnd, x, y, width, height, True)
+        if always_on_top:
+            win32gui.SetWindowPos(
+                hwnd,
+                win32con.HWND_TOPMOST,
+                0, 0, 0, 0,
+                win32con.SWP_NOMOVE | win32con.SWP_NOSIZE
+            )
 
-# 예: (x=100, y=100) 위치에 (560x310) 크기
-set_console_position_and_size(1360, 160, 560, 310)
+# 실행 시 적용
+set_console_window()
+
 
 def screenshot_all_monitors():
     with mss.mss() as sct:
