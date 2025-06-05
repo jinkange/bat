@@ -106,11 +106,11 @@ def is_image_in_region(template_path, region, threshold=0.96):
 
     result = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
     max_val = np.max(result)
-    if(max_val >= threshold):
-        print(f"{template_path} : {max_val} 찾음!")
-    else:
-        print(f"{template_path} : {max_val}")
-    return max_val >= threshold
+    # if(max_val >= threshold):
+    #     print(f"{template_path} : {max_val} 찾음!")
+    # else:
+    #     print(f"{template_path} : {max_val}")
+    # return max_val >= threshold
 
 # 클릭 함수
 def click_at(pos):
@@ -292,11 +292,12 @@ while True:
         #     time.sleep(0.5)
         #     break
             
-        while True:
-            if stopped:
-                break
-            if is_image_in_region(images["bet_closed"], wat_region):
-                break
+        if(bet_target == ''):
+            while True:
+                if stopped:
+                    break
+                if is_image_in_region(images["bet_closed"], wat_region):
+                    break
             
         if(restart):
             waitingCount += 1
