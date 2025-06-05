@@ -292,13 +292,6 @@ while True:
         #     time.sleep(0.5)
         #     break
             
-        if(bet_target == ''):
-            while True:
-                if stopped:
-                    break
-                if is_image_in_region(images["bet_closed"], wat_region):
-                    break
-            
         if(restart):
             waitingCount += 1
             isWaiting = True
