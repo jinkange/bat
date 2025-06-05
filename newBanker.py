@@ -98,7 +98,7 @@ def is_image_in_region(template_path, region, threshold=0.96):
 
     result = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
     max_val = np.max(result)
-    
+    print(f"{template_path} : {max_val}")
     return max_val >= threshold
 
 # 클릭 함수
@@ -221,6 +221,14 @@ while True:
 
     # 매크로 루프 시작
     while running:
+        
+        is_image_in_region(images["banker_win"],bet_region)
+        is_image_in_region(images["player_win"],bet_region)
+        is_image_in_region(images["tie"],bet_region)
+        is_image_in_region(images["bet_closed"],bet_region)
+        is_image_in_region(images["place_bet"],bet_region)
+        is_image_in_region(images["reissued"],bet_region)
+        continue
         #목표치 확인
         if hole_total_profit >= GAME_FINISH_PRICE:
             print("💰 누적 목표 수익 도달, 매크로 정지")
