@@ -248,13 +248,13 @@ while True:
     # 매크로 루프 시작
     while running:
         
-        is_image_in_region(images["banker_win"],bet_region)
-        is_image_in_region(images["player_win"],bet_region)
-        is_image_in_region(images["tie"],bet_region)
+        # is_image_in_region(images["banker_win"],bet_region)
+        # is_image_in_region(images["player_win"],bet_region)
+        # is_image_in_region(images["tie"],bet_region)
         # is_image_in_region(images["bet_closed"],wat_region)
         # is_image_in_region(images["place_bet"],open_region)
         # is_image_in_region(images["reissued"],sue_region)
-        continue
+        # continue
         #목표치 확인
         if hole_total_profit >= GAME_FINISH_PRICE:
             print("💰 누적 목표 수익 도달, 매크로 정지")
