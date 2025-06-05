@@ -98,7 +98,10 @@ def is_image_in_region(template_path, region, threshold=0.96):
 
     result = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
     max_val = np.max(result)
-    print(f"{template_path} : {max_val}")
+    if(max_val >= threshold):
+        print(f"{template_path} : {max_val} 찾음!")
+    else:
+        print(f"{template_path} : {max_val}")
     return max_val >= threshold
 
 # 클릭 함수
