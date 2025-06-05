@@ -311,19 +311,18 @@ while True:
         #     break
             
         if(restart):
-            waitingCount += 1
-            print(f"💹 2판중 {waitingCount}판 대기중...")
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-            while not is_image_in_region(images["bet_closed"], wat_region):
-                if stopped:
-                    break
-            
             isWaiting = True
+            waitingCount += 1
             if(waitingCount > 2):
                 restart = False
                 isRestart = True
                 isSueRestartChange = True
                 break
+            print(f"💹 2판중 {waitingCount}판 대기중...")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            while not is_image_in_region(images["bet_closed"], wat_region):
+                if stopped:
+                    break
             
             
         
