@@ -81,8 +81,7 @@ def find_image_on_screen(template_path, threshold=0.99):
     else:
         return False
 
-# 배팅
-bet_region = (780, 225, 320, 137)
+bet_region = (715, 165, 463, 238)
 
 # 뱃클로즈
 wat_region = (800, 689, 340, 61)
@@ -223,7 +222,7 @@ def place_bet(target_pos, amount):
             pyautogui.click(target_pos)
             time.sleep(0.1)
 def beep_alert():
-    for _ in range(2):  # 삐비 삐비 2번
+    for _ in range(5):  # 삐비 삐비 2번
         winsound.Beep(1000, 150)  # 주파수: 1000Hz, 지속시간: 150ms
         winsound.Beep(1500, 150)
 
