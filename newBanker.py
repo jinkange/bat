@@ -8,6 +8,9 @@ try:
     import threading
     import mss
     import winsound
+    import ctypes
+    import win32gui
+    import win32con
 except Exception as e:
     print(e)
     
@@ -40,7 +43,14 @@ def keyboard_listener():
 listener_thread = threading.Thread(target=keyboard_listener, daemon=True)
 listener_thread.start()
 
-    
+def set_console_position_and_size(x, y, width, height):
+    hwnd = ctypes.windll.kernel32.GetConsoleWindow()
+    if hwnd:
+        win32gui.MoveWindow(hwnd, x, y, width, height, True)
+
+# 예: (x=100, y=100) 위치에 (560x310) 크기
+set_console_position_and_size(1360, 160, 560, 310)
+
 def screenshot_all_monitors():
     with mss.mss() as sct:
         monitor = sct.monitors[0]  # [0]은 모든 모니터 포함
