@@ -7,8 +7,17 @@ try:
     import keyboard
     import threading
     import mss
+    import winsound
 except Exception as e:
     print(e)
+    
+    
+    
+    
+    
+    
+    
+    
 running = False
 stopped = False
 # 키 입력 감지 스레드
@@ -213,9 +222,24 @@ def place_bet(target_pos, amount):
         for _ in range(count):
             pyautogui.click(target_pos)
             time.sleep(0.1)
+def beep_alert():
+    for _ in range(2):  # 삐비 삐비 2번
+        winsound.Beep(1000, 150)  # 주파수: 1000Hz, 지속시간: 150ms
+        winsound.Beep(1500, 150)
 
-TURN_FINISH_PRICE = -50
-GAME_FINISH_PRICE = 850
+def get_integer_input(prompt):
+    while True:
+        try:
+            value = int(input(prompt))  # 음수 포함 정수 입력 받기
+            return value
+        except ValueError:
+            print("숫자만 입력해주세요.")
+
+# 매크로 시작 시 입력 받기
+TURN_FINISH_PRICE = get_integer_input("💰 판당 목표 수익 금액을 입력하세요 (예: -50): ")
+GAME_FINISH_PRICE = get_integer_input("🛑 매크로 정지 수익금액을 입력하세요 (예: 850): ")
+
+beep_alert()
 
 while True:
     if not running:
@@ -423,22 +447,22 @@ while True:
         #         click_at(PLAYER_POS)
         # 테스트
         if(banker_win_count > player_win_count):
-            # click_at(AMOUNT_POS[100])
-            # click_at(BANKER_POS)
+            click_at(AMOUNT_POS[100])
+            click_at(BANKER_POS)
             bet_target = "BANKER"
         elif(banker_win_count < player_win_count):
-            # click_at(AMOUNT_POS[100])
-            # click_at(PLAYER_POS)
+            click_at(AMOUNT_POS[100])
+            click_at(PLAYER_POS)
             bet_target = "PLAYER"
         else: 
             if(last_restart == "BANKER"):
                 bet_target = last_restart
-                # click_at(AMOUNT_POS[100])
-                # click_at(BANKER_POS)
+                click_at(AMOUNT_POS[100])
+                click_at(BANKER_POS)
             else:
                 bet_target = last_restart
-                # click_at(AMOUNT_POS[100])
-                # click_at(PLAYER_POS)
+                click_at(AMOUNT_POS[100])
+                click_at(PLAYER_POS)
         
         totalBat += 1
         print(f"🎯 배팅: {bet_target}, 금액: {amount}원, 단계: {stage}단계, 총 배팅: {totalBat}회")
