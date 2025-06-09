@@ -455,6 +455,8 @@ while True:
             if(amount >= total_profit * -1):
                 print(f"배팅금액 : {amount} > 누적수익 : {total_profit}")
                 stage = (total_profit * -1) // 200
+                if(stage <= 0):
+                    stage = 1
                 amount = stage * 200
                 print(f"※누적수익에 따른 배팅금액,단계 변경")
                 print(f"배팅금액 : {amount}, 단계 : {stage}")
