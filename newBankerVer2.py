@@ -451,7 +451,7 @@ while True:
         # 4. 그럼 -50원이기때문에 판수 초기화 완료
         # 지면 : 51단계
         amount = stage * 200
-        if(total_profit < -50):
+        if(total_profit < -50 and stage != 2):
             if(amount >= total_profit * -1):
                 print(f"배팅금액 : {amount} > 누적수익 : {total_profit}")
                 stage = (total_profit * -1) // 200
