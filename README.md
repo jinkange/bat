@@ -4,6 +4,8 @@ pip install mss
 pyinstaller --onefile --hidden-import=cv2 main.py 
 pyinstaller --onefile --hidden-import=cv2 banker2.py
 pyinstaller --onefile --hidden-import=cv2 banker3.py
+pyinstaller --onefile --hidden-import=cv2 newBanker.py
+pyinstaller --onefile --hidden-import=cv2 newBankerVer2.py
 
 - 매크로 기능정의서
 1. 기본 규칙

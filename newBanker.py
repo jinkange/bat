@@ -102,7 +102,7 @@ def find_image_on_screen(template_path, threshold=0.99):
 bet_region = (715, 165, 463, 238)
 
 # 뱃클로즈
-wat_region = (800, 689, 340, 61)
+wat_region = (800, 700, 400, 70)
 # dd
 open_region = (650, 960, 700, 118)
 #슈체인지
@@ -149,14 +149,24 @@ images = {
 # 좌표 예시 (실제 화면에 맞게 조정 필요)
 BANKER_POS = (1166,877)
 PLAYER_POS = (733,869)
+# AMOUNT_POS = {
+#     100: (700,1020),
+#     500: (771, 1020),
+#     2500: (848, 1020),
+#     10000: (919, 1020),
+#     125000: (1071, 1020),
+#     500000: (1141, 1020),
+#     500000: (1141, 1020),
+#     2500000: (1219, 1020),
+# }
 AMOUNT_POS = {
-    100: (700,1020),
-    500: (771, 1020),
-    2500: (848, 1020),
-    10000: (919, 1020),
-    125000: (1071, 1020),
-    500000: (1141, 1020),
-    500000: (1141, 1020),
+    1000: (767,1044),
+    5000: (820, 1034),
+    10000: (873, 1033),
+    100000: (919, 1020),
+    1250000: (1071, 1020),
+    5000000: (1141, 1020),
+    5000000: (1141, 1020),
     2500000: (1219, 1020),
 }
 
@@ -233,12 +243,12 @@ def place_bet(target_pos, amount):
 
         # 칩 클릭 1번
         pyautogui.click(chip_pos)
-        time.sleep(0.1)
+        time.sleep(0.5)
 
         # 대상에 count번 클릭
         for _ in range(count):
             pyautogui.click(target_pos)
-            time.sleep(0.1)
+            time.sleep(0.5)
 def beep_alert():
     for _ in range(6):  # 삐비 삐비 2번
         winsound.Beep(1000, 150)  # 주파수: 1000Hz, 지속시간: 150ms
@@ -442,7 +452,7 @@ while True:
         
 
         
-        amount = stage * 200
+        amount = stage * 1000
         
             
         # 실제 배팅
@@ -455,12 +465,12 @@ while True:
         else: 
             if(last_restart == "BANKER"):
                 bet_target = last_restart
-                click_at(AMOUNT_POS[100])
+                click_at(AMOUNT_POS[1000])
                 click_at(BANKER_POS)
                 click_at(BANKER_POS)
             else:
                 bet_target = last_restart
-                click_at(AMOUNT_POS[100])
+                click_at(AMOUNT_POS[1000])
                 click_at(PLAYER_POS)
                 click_at(PLAYER_POS)
         # # 테스트

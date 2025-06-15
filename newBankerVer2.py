@@ -23,23 +23,35 @@ except Exception as e:
     
 running = False
 stopped = False
+sueChange = False
 # 키 입력 감지 스레드
 def keyboard_listener():
     global running, stopped
+    global hole_total_profit
+    global banker_win_count, player_win_count, bet_target, isWaiting
     while True:
-        if keyboard.is_pressed('1'):
+        if keyboard.is_pressed('a'):
             running = True
             stopped = False
             print("✅ 매크로 시작됨")
             time.sleep(0.5)
-        elif keyboard.is_pressed('2'):
-            global hole_total_profit
+        elif keyboard.is_pressed('s'):
+
             running = False
             stopped = True
             print("⛔ 매크로 정지됨")
             hole_total_profit= 0
             init()
             time.sleep(0.5)
+        elif keyboard.is_pressed('d'):
+            print("💹 슈 교체 한턴 쉬기 및 카운팅 초기화")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            banker_win_count = 0
+            player_win_count = 0
+            bet_target = ''
+            isWaiting= True
+            time.sleep(0.5)
+            
 listener_thread = threading.Thread(target=keyboard_listener, daemon=True)
 listener_thread.start()
 
@@ -210,7 +222,7 @@ def init():
     amount = 0
 # print("✅ 배팅금액 1단계 x 200원, 추세 배팅, 누적수익별 배팅금액변동 *TEST ver1.0.0")
 print("✅ 배팅금액 1단계 x 200원, 추세 배팅, 누적수익별 배팅금액변동 ver1.0.0")
-print("▶ 1번을 누르면 시작, 2번을 누르면 정지")
+print("▶ A 누르면 시작, S 누르면 정지")
 
 sorted_chips = sorted(AMOUNT_POS.keys(), reverse=True)
         
