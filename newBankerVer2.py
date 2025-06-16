@@ -228,9 +228,10 @@ sorted_chips = sorted(AMOUNT_POS.keys(), reverse=True)
         
 def get_chip_combination(amount):
     """큰 칩부터 조합"""
+    amount = int(round(amount))  # 👈 float을 int로 바꿔서 방지
     combination = []
     for chip in sorted_chips:
-        count = amount // chip
+        count = int(amount // chip)
         if count > 0:
             combination.append((chip, count))
             amount -= chip * count
@@ -246,9 +247,13 @@ def place_bet(target_pos, amount):
         # 칩 클릭 1번
         pyautogui.click(chip_pos)
         time.sleep(0.1)
-
-        # 대상에 count번 클릭
-        for _ in range(count):
+        try:
+            safe_count = int(count)
+        except (TypeError, ValueError):
+            print(f"경고: count 값이 정수로 변환 불가합니다: {count}")
+            continue
+        # 대상에 safe_count번 클릭
+        for _ in range(safe_count):
             pyautogui.click(target_pos)
             time.sleep(0.1)
 def beep_alert():
