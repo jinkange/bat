@@ -34,12 +34,14 @@ def keyboard_listener():
             running = True
             stopped = False
             print("✅ 매크로 시작됨")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             time.sleep(0.5)
         elif keyboard.is_pressed('s'):
 
             running = False
             stopped = True
             print("⛔ 매크로 정지됨")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             hole_total_profit= 0
             init()
             time.sleep(0.5)
@@ -50,6 +52,12 @@ def keyboard_listener():
             player_win_count = 0
             bet_target = ''
             isWaiting= True
+            time.sleep(0.5)
+        elif keyboard.is_pressed('f'):
+            print("💹 매크로 초기화")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            restart()
+            stopped = True
             time.sleep(0.5)
             
 listener_thread = threading.Thread(target=keyboard_listener, daemon=True)
@@ -220,9 +228,74 @@ def init():
     banker_win_count = 0
     player_win_count = 0
     amount = 0
-# print("✅ 배팅금액 1단계 x 200원, 추세 배팅, 누적수익별 배팅금액변동 *TEST ver1.0.0")
-print("✅ 배팅금액 1단계 x 200원, 추세 배팅, 누적수익별 배팅금액변동 ver1.0.0")
-print("▶ A 누르면 시작, S 누르면 정지")
+    
+def restart():
+    global restart
+    global waitingCount
+    global isWaiting
+    global totalBat
+    global batSize
+    global bet_target
+    global stage
+    global total_profit
+    global hole_total_profit
+    global banker_win_count
+    global player_win_count
+    global amount
+    global last_restart
+    global last_restart_bat_size
+    global isRestart
+    global isSueRestart
+    global isPass
+    global isSueRestartChange
+    global isSuePass
+    global isSueChange
+
+    global running
+    global stopped
+    global sueChange
+    running = False
+    stopped = False
+    sueChange = False
+    restart = False
+    waitingCount = 0
+    isWaiting = True
+    totalBat = 0
+    batSize = 0
+    bet_target = ''
+    stage = 1
+    total_profit = 0
+    hole_total_profit = 0
+    banker_win_count = 0
+    player_win_count = 0
+    amount = 0
+    last_restart = ''
+    last_restart_bat_size = 0
+    isRestart = False
+    isSueRestart = False
+    isPass = False
+    isSueRestartChange = False
+    isSuePass = False
+    isSueChange = False
+    
+
+
+def get_integer_input(prompt):
+    while True:
+        try:
+            value = int(input(prompt))  # 음수 포함 정수 입력 받기
+            return value
+        except ValueError:
+            print("숫자만 입력해주세요.")
+
+# 매크로 시작 시 입력 받기
+TURN_FINISH_PRICE = get_integer_input("💰 판당 목표 수익 금액을 입력하세요 (예: -50): ")
+GAME_FINISH_PRICE = get_integer_input("🛑 매크로 정지 수익 금액을 입력하세요 (예: 850): ")
+GAME_BAT_PRICE = get_integer_input("▷ 판당 배팅 금액을 입력하세요 (예: 500): ")
+print(f"판당 목표 수익 : {TURN_FINISH_PRICE} / 매크로 정지수익 : {GAME_FINISH_PRICE}")
+print(f"✅ 배팅금액 1단계 x {GAME_BAT_PRICE}원 [추세배팅] *TEST ver2.0.2")
+#print(f"✅ 배팅금액 1단계 x {GAME_BAT_PRICE}원, [추세배팅] ver2.0.1")
+print("▶ A : 시작, S : 정지, D : 슈교체 및 초기화, F : 매크로 초기화")
 
 sorted_chips = sorted(AMOUNT_POS.keys(), reverse=True)
         
@@ -261,18 +334,7 @@ def beep_alert():
         winsound.Beep(1000, 150)  # 주파수: 1000Hz, 지속시간: 150ms
         winsound.Beep(1500, 150)
 
-def get_integer_input(prompt):
-    while True:
-        try:
-            value = int(input(prompt))  # 음수 포함 정수 입력 받기
-            return value
-        except ValueError:
-            print("숫자만 입력해주세요.")
 
-# 매크로 시작 시 입력 받기
-TURN_FINISH_PRICE = get_integer_input("💰 판당 목표 수익 금액을 입력하세요 (예: -50): ")
-GAME_FINISH_PRICE = get_integer_input("🛑 매크로 정지 수익 금액을 입력하세요 (예: 850): ")
-print(f"판당 목표 수익 : {TURN_FINISH_PRICE} / 매크로 정지수익 : {GAME_FINISH_PRICE}")
 
 while True:
     if not running:
@@ -304,7 +366,7 @@ while True:
             time.sleep(0.5)
             continue
         
-        if stage >= 150:
+        if stage >= 200:
             print("💰 손절 스테이지 도달, 매크로 정지")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             time.sleep(1)
@@ -403,6 +465,8 @@ while True:
         if(isPass and isWaiting):
             isPass = False
             continue
+        if stopped:
+            break
         
         if(result == bet_target and bet_target != '' and result != "TIE"):
             stage += 1
@@ -467,55 +531,51 @@ while True:
         # 3. 다음 배팅금액 5200원보다 -500이 적기 때문에 추가 알고리즘 작동이기때문에 200원(1단계) 배팅을 함
         # 4. 그럼 -50원이기때문에 판수 초기화 완료
         # 지면 : 51단계
-        amount = stage * 200
+        amount = stage * GAME_BAT_PRICE
         if(total_profit < -50 and stage != 2):
             if(amount >= total_profit * -1):
                 print(f"배팅금액 : {amount} > 누적수익 : {total_profit}")
-                stage = (total_profit * -1) // 200
+                stage = (total_profit * -1) // GAME_BAT_PRICE
                 if(stage <= 0):
                     stage = 1
-                amount = stage * 200
+                amount = stage * GAME_BAT_PRICE
                 print(f"※누적수익에 따른 배팅금액,단계 변경")
                 print(f"배팅금액 : {amount}, 단계 : {stage}")
                 
                 
             
         # 실제 배팅
+        # if(banker_win_count > player_win_count):
+        #     place_bet(BANKER_POS, amount)
+        #     bet_target = "BANKER"
+        # elif(banker_win_count < player_win_count):
+        #     place_bet(PLAYER_POS, amount)
+        #     bet_target = "PLAYER"
+        # else: 
+        #     if(last_restart == "BANKER"):
+        #         bet_target = last_restart
+        #         place_bet(PLAYER_POS, amount)
+        #     else:
+        #         bet_target = last_restart
+        #         place_bet(BANKER_POS, amount)
+        # 테스트
         if(banker_win_count > player_win_count):
-            place_bet(BANKER_POS, amount)
+            click_at(AMOUNT_POS[100])
+            click_at(BANKER_POS)
             bet_target = "BANKER"
         elif(banker_win_count < player_win_count):
-            place_bet(PLAYER_POS, amount)
+            click_at(AMOUNT_POS[100])
+            click_at(PLAYER_POS)
             bet_target = "PLAYER"
         else: 
             if(last_restart == "BANKER"):
                 bet_target = last_restart
                 click_at(AMOUNT_POS[100])
                 click_at(BANKER_POS)
-                click_at(BANKER_POS)
             else:
                 bet_target = last_restart
                 click_at(AMOUNT_POS[100])
                 click_at(PLAYER_POS)
-                click_at(PLAYER_POS)
-        # # 테스트
-        # if(banker_win_count > player_win_count):
-        #     click_at(AMOUNT_POS[100])
-        #     click_at(BANKER_POS)
-        #     bet_target = "BANKER"
-        # elif(banker_win_count < player_win_count):
-        #     click_at(AMOUNT_POS[100])
-        #     click_at(PLAYER_POS)
-        #     bet_target = "PLAYER"
-        # else: 
-        #     if(last_restart == "BANKER"):
-        #         bet_target = last_restart
-        #         click_at(AMOUNT_POS[100])
-        #         click_at(BANKER_POS)
-        #     else:
-        #         bet_target = last_restart
-        #         click_at(AMOUNT_POS[100])
-        #         click_at(PLAYER_POS)
         
         totalBat += 1
         print(f"🎯 배팅: {bet_target}, 금액: {amount}원, 단계: {stage}단계, 총 배팅: {totalBat}회")

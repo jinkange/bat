@@ -6,7 +6,7 @@ pyinstaller --onefile --hidden-import=cv2 banker2.py
 pyinstaller --onefile --hidden-import=cv2 banker3.py
 pyinstaller --onefile --hidden-import=cv2 newBanker.py
 pyinstaller --onefile --hidden-import=cv2 newBankerVer2.py
-
+pyinstaller --onefile --hidden-import=cv2 newBankerVer3.py
 - 매크로 기능정의서
 1. 기본 규칙
   1.1 배팅 뱅커, 플레이어 선택은 나온횟수가 적은곳을 선택
@@ -32,3 +32,4 @@ pyinstaller --onefile --hidden-import=cv2 newBankerVer2.py
       41~50	40,000
   2.4 무승부시
     2.4.1 배팅한 방식 그대로 다음판 진행
+    

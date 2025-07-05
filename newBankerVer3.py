@@ -57,15 +57,8 @@ def keyboard_listener():
         elif keyboard.is_pressed('f'):
             print("💹 매크로 초기화")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-            running = False
+            restart()
             stopped = True
-            restart = False
-            banker_win_count = 0
-            player_win_count = 0
-            hole_total_profit= 0
-            bet_target = ''
-            isWaiting= True
-            init()
             time.sleep(0.5)
             
 listener_thread = threading.Thread(target=keyboard_listener, daemon=True)
@@ -237,6 +230,56 @@ def init():
     player_win_count = 0
     amount = 0
     
+def restart():
+    global restart
+    global waitingCount
+    global isWaiting
+    global totalBat
+    global batSize
+    global bet_target
+    global stage
+    global total_profit
+    global hole_total_profit
+    global banker_win_count
+    global player_win_count
+    global amount
+    global last_restart
+    global last_restart_bat_size
+    global isRestart
+    global isSueRestart
+    global isPass
+    global isSueRestartChange
+    global isSuePass
+    global isSueChange
+
+    global running
+    global stopped
+    global sueChange
+    running = False
+    stopped = False
+    sueChange = False
+    restart = False
+    waitingCount = 0
+    isWaiting = True
+    totalBat = 0
+    batSize = 0
+    bet_target = ''
+    stage = 1
+    total_profit = 0
+    hole_total_profit = 0
+    banker_win_count = 0
+    player_win_count = 0
+    amount = 0
+    last_restart = ''
+    last_restart_bat_size = 0
+    isRestart = False
+    isSueRestart = False
+    isPass = False
+    isSueRestartChange = False
+    isSuePass = False
+    isSueChange = False
+    
+    
 def get_integer_input(prompt):
     while True:
         try:
@@ -250,8 +293,8 @@ TURN_FINISH_PRICE = get_integer_input("💰 판당 목표 수익 금액을 입�
 GAME_FINISH_PRICE = get_integer_input("🛑 매크로 정지 수익 금액을 입력하세요 (예: 850): ")
 GAME_BAT_PRICE = get_integer_input("▷ 판단 배팅 금액을 입력하세요 (예: 500): ")
 print(f"판당 목표 수익 : {TURN_FINISH_PRICE} / 매크로 정지수익 : {GAME_FINISH_PRICE}")
-print(f"✅ 배팅금액 1단계 x {GAME_BAT_PRICE}원 *TEST ver3.0.0")
-# print("✅ 배팅금액 1단계 x 200원, 추세 배팅, 누적수익별 배팅금액변동 ver3.0.0")
+print(f"✅ 배팅금액 1단계 x {GAME_BAT_PRICE}원 *TEST ver3.0.1")
+# print("✅ 배팅금액 1단계 x 200원, 추세 배팅, 누적수익별 배팅금액변동 ver3.0.")
 print("▶ A : 시작, S : 정지, D : 슈교체 및 초기화, F : 매크로 초기화")
 
 sorted_chips = sorted(AMOUNT_POS.keys(), reverse=True)
@@ -424,6 +467,10 @@ while True:
             isPass = False
             continue
         
+        if stopped:
+            break
+                
+        
         if(result == bet_target and bet_target != '' and result != "TIE"):
             stage += 1
             total_profit = total_profit + (amount * batSize) - amount
@@ -515,11 +562,11 @@ while True:
         #         bet_target = "BANKER"
         #         place_bet(BANKER_POS, amount)
         # 테스트
-        if(banker_win_count > player_win_count):
+        if(banker_win_count < player_win_count):
             click_at(AMOUNT_POS[100])
             click_at(BANKER_POS)
             bet_target = "BANKER"
-        elif(banker_win_count < player_win_count):
+        elif(banker_win_count > player_win_count):
             click_at(AMOUNT_POS[100])
             click_at(PLAYER_POS)
             bet_target = "PLAYER"
