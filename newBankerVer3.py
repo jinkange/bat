@@ -55,7 +55,7 @@ def keyboard_listener():
             isWaiting= True
             time.sleep(0.5)
         elif keyboard.is_pressed('f'):
-            print("💹 매크로 초기화")
+            print("💹 1단계 이동")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             totalRestart()
             stopped = True
@@ -238,10 +238,6 @@ def totalRestart():
     global batSize
     global bet_target
     global stage
-    global total_profit
-    global hole_total_profit
-    global banker_win_count
-    global player_win_count
     global amount
     global last_restart
     global last_restart_bat_size
