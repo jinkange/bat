@@ -57,7 +57,7 @@ def keyboard_listener():
         elif keyboard.is_pressed('f'):
             print("💹 매크로 초기화")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-            restart()
+            totalRestart()
             stopped = True
             time.sleep(0.5)
             
@@ -230,7 +230,7 @@ def init():
     player_win_count = 0
     amount = 0
     
-def restart():
+def totalRestart():
     global restart
     global waitingCount
     global isWaiting
@@ -291,10 +291,10 @@ def get_integer_input(prompt):
 # 매크로 시작 시 입력 받기
 TURN_FINISH_PRICE = get_integer_input("💰 판당 목표 수익 금액을 입력하세요 (예: -50): ")
 GAME_FINISH_PRICE = get_integer_input("🛑 매크로 정지 수익 금액을 입력하세요 (예: 850): ")
-GAME_BAT_PRICE = get_integer_input("▷ 판단 배팅 금액을 입력하세요 (예: 500): ")
+GAME_BAT_PRICE = get_integer_input("▷ 판당 배팅 금액을 입력하세요 (예: 500): ")
 print(f"판당 목표 수익 : {TURN_FINISH_PRICE} / 매크로 정지수익 : {GAME_FINISH_PRICE}")
-print(f"✅ 배팅금액 1단계 x {GAME_BAT_PRICE}원 *TEST ver3.0.1")
-# print("✅ 배팅금액 1단계 x 200원, 추세 배팅, 누적수익별 배팅금액변동 ver3.0.")
+print(f"✅ 배팅금액 1단계 x {GAME_BAT_PRICE}원 [비율배팅] *TEST ver3.0.2")
+# print("✅ 배팅금액 1단계 x {GAME_BAT_PRICE}원 [비율배팅] ver3.0.2")
 print("▶ A : 시작, S : 정지, D : 슈교체 및 초기화, F : 매크로 초기화")
 
 sorted_chips = sorted(AMOUNT_POS.keys(), reverse=True)
@@ -547,39 +547,39 @@ while True:
                 
                 
             
-        # # 실제 배팅
-        # if(banker_win_count < player_win_count):
-        #     place_bet(BANKER_POS, amount)
-        #     bet_target = "BANKER"
-        # elif(banker_win_count > player_win_count):
-        #     place_bet(PLAYER_POS, amount)
-        #     bet_target = "PLAYER"
-        # else: 
-        #     if(last_restart == "BANKER"):
-        #         bet_target = "PLAYER"
-        #         place_bet(PLAYER_POS, amount)
-        #     else:
-        #         bet_target = "BANKER"
-        #         place_bet(BANKER_POS, amount)
-        # 테스트
+        # 실제 배팅
         if(banker_win_count < player_win_count):
-            click_at(AMOUNT_POS[100])
-            click_at(BANKER_POS)
+            place_bet(BANKER_POS, amount)
             bet_target = "BANKER"
         elif(banker_win_count > player_win_count):
-            click_at(AMOUNT_POS[100])
-            click_at(PLAYER_POS)
+            place_bet(PLAYER_POS, amount)
             bet_target = "PLAYER"
         else: 
             if(last_restart == "BANKER"):
                 bet_target = "PLAYER"
-                click_at(AMOUNT_POS[100])
-                click_at(PLAYER_POS)
-                
+                place_bet(PLAYER_POS, amount)
             else:
                 bet_target = "BANKER"
-                click_at(AMOUNT_POS[100])
-                click_at(BANKER_POS)
+                place_bet(BANKER_POS, amount)
+        # # 테스트
+        # if(banker_win_count < player_win_count):
+        #     click_at(AMOUNT_POS[100])
+        #     click_at(BANKER_POS)
+        #     bet_target = "BANKER"
+        # elif(banker_win_count > player_win_count):
+        #     click_at(AMOUNT_POS[100])
+        #     click_at(PLAYER_POS)
+        #     bet_target = "PLAYER"
+        # else: 
+        #     if(last_restart == "BANKER"):
+        #         bet_target = "PLAYER"
+        #         click_at(AMOUNT_POS[100])
+        #         click_at(PLAYER_POS)
+                
+        #     else:
+        #         bet_target = "BANKER"
+        #         click_at(AMOUNT_POS[100])
+        #         click_at(BANKER_POS)
         
         totalBat += 1
         print(f"🎯 배팅: {bet_target}, 금액: {amount}원, 단계: {stage}단계, 총 배팅: {totalBat}회")
