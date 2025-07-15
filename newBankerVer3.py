@@ -397,22 +397,24 @@ while True:
                 isRestart = True
                 isSueRestartChange = True
                 break
-            print("휴식판 손익본절 달성 - 매크로 정지")
+            #휴식멈춤off
+            print(f"💹 2판중 {waitingCount}판 대기중...")
             print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-            time.sleep(1)
-            running = False
-            stopped = True
-            restart = False
-            beep_alert2()
-            hole_total_profit= 0
-            init()
-            time.sleep(0.5)
-            continue
-            # print(f"💹 2판중 {waitingCount}판 대기중...")
+            while not is_image_in_region(images["bet_closed"], wat_region):
+                if stopped:
+                    break
+            #휴식멈춤off
+            # print("휴식판 손익본절 달성 - 매크로 정지")
             # print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
-            # while not is_image_in_region(images["bet_closed"], wat_region):
-            #     if stopped:
-            #         break
+            # time.sleep(1)
+            # running = False
+            # stopped = True
+            # restart = False
+            # beep_alert2()
+            # hole_total_profit= 0
+            # init()
+            # time.sleep(0.5)
+            # continue
             
             
         
