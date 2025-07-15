@@ -509,6 +509,7 @@ while True:
                     continue
             else:
                 isSueRestartChange = False
+                
         if(isWaiting):
             bet_target = ''
             continue
@@ -536,38 +537,38 @@ while True:
                 
                 
             
-        # 실제 배팅
-        if(banker_win_count > player_win_count):
-            place_bet(BANKER_POS, amount)
-            bet_target = "BANKER"
-        elif(banker_win_count < player_win_count):
-            place_bet(PLAYER_POS, amount)
-            bet_target = "PLAYER"
-        else: 
-            if(last_restart == "BANKER"):
-                bet_target = last_restart
-                place_bet(PLAYER_POS, amount)
-            else:
-                bet_target = last_restart
-                place_bet(BANKER_POS, amount)
-        # # 테스트
+        # # 실제 배팅
         # if(banker_win_count > player_win_count):
-        #     click_at(AMOUNT_POS[100])
-        #     click_at(BANKER_POS)
+        #     place_bet(BANKER_POS, amount)
         #     bet_target = "BANKER"
         # elif(banker_win_count < player_win_count):
-        #     click_at(AMOUNT_POS[100])
-        #     click_at(PLAYER_POS)
+        #     place_bet(PLAYER_POS, amount)
         #     bet_target = "PLAYER"
         # else: 
         #     if(last_restart == "BANKER"):
         #         bet_target = last_restart
-        #         click_at(AMOUNT_POS[100])
-        #         click_at(BANKER_POS)
+        #         place_bet(PLAYER_POS, amount)
         #     else:
         #         bet_target = last_restart
-        #         click_at(AMOUNT_POS[100])
-        #         click_at(PLAYER_POS)
+        #         place_bet(BANKER_POS, amount)
+        # 테스트
+        if(banker_win_count > player_win_count):
+            click_at(AMOUNT_POS[100])
+            click_at(BANKER_POS)
+            bet_target = "BANKER"
+        elif(banker_win_count < player_win_count):
+            click_at(AMOUNT_POS[100])
+            click_at(PLAYER_POS)
+            bet_target = "PLAYER"
+        else: 
+            if(last_restart == "BANKER"):
+                bet_target = last_restart
+                click_at(AMOUNT_POS[100])
+                click_at(BANKER_POS)
+            else:
+                bet_target = last_restart
+                click_at(AMOUNT_POS[100])
+                click_at(PLAYER_POS)
         
         totalBat += 1
         print(f"🎯 배팅: {bet_target}, 금액: {amount}원, 단계: {stage}단계, 총 배팅: {totalBat}회")
