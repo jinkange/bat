@@ -34,20 +34,20 @@ def keyboard_listener():
             running = True
             stopped = False
             print("✅ 매크로 시작됨")
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             time.sleep(0.5)
         elif keyboard.is_pressed('s'):
 
             running = False
             stopped = True
             print("⛔ 매크로 정지됨")
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             hole_total_profit= 0
             init()
             time.sleep(0.5)
         elif keyboard.is_pressed('d'):
             print("💹 슈 교체 한턴 쉬기 및 카운팅 초기화")
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             banker_win_count = 0
             player_win_count = 0
             bet_target = ''
@@ -55,7 +55,7 @@ def keyboard_listener():
             time.sleep(0.5)
         elif keyboard.is_pressed('f'):
             print("💹 1단계 이동")
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             totalRestart()
             stopped = True
             time.sleep(0.5)
@@ -64,7 +64,7 @@ def keyboard_listener():
 listener_thread = threading.Thread(target=keyboard_listener, daemon=True)
 listener_thread.start()
 
-def set_console_window(x=1360, y=160, width=570, height=330, always_on_top=True):
+def set_console_window(x=1310, y=160, width=610, height=330, always_on_top=True):
     hwnd = ctypes.windll.kernel32.GetConsoleWindow()
     if hwnd:
         win32gui.MoveWindow(hwnd, x, y, width, height, True)
@@ -145,10 +145,10 @@ def is_image_in_region(template_path, region, threshold=0.96):
 
     result = cv2.matchTemplate(screenshot, template, cv2.TM_CCOEFF_NORMED)
     max_val = np.max(result)
-    # if(max_val >= threshold):
-    #     print(f"{template_path} : {max_val} 찾음!")
-    # else:
-    #     print(f"{template_path} : {max_val}")
+    if(max_val >= threshold):
+        print(f"{template_path} : {max_val} 찾음!")
+    else:
+        print(f"{template_path} : {max_val}")
     return max_val >= threshold
 
 # 클릭 함수
@@ -201,7 +201,6 @@ isRestart = False
 isSueRestart = False
 isPass = False
 isSueRestartChange = False
-isSuePass = False
 isSueChange = False
 def init():
     global waitingCount
@@ -210,7 +209,6 @@ def init():
     global batSize
     global isRestart
     global isSueRestart
-    
     global bet_target
     global stage
     global total_profit
@@ -247,6 +245,7 @@ def totalRestart():
     global isSueRestartChange
     global isSuePass
     global isSueChange
+
     global running
     global stopped
     global sueChange
@@ -269,7 +268,6 @@ def totalRestart():
     isSueRestartChange = False
     isSuePass = False
     isSueChange = False
-    
 
 
 def get_integer_input(prompt):
@@ -285,8 +283,8 @@ TURN_FINISH_PRICE = get_integer_input("💰 판당 목표 수익 금액을 입�
 GAME_FINISH_PRICE = get_integer_input("🛑 매크로 정지 수익 금액을 입력하세요 (예: 850): ")
 GAME_BAT_PRICE = get_integer_input("▷ 판당 배팅 금액을 입력하세요 (예: 500): ")
 print(f"판당 목표 수익 : {TURN_FINISH_PRICE} / 매크로 정지수익 : {GAME_FINISH_PRICE}")
-print(f"✅ 배팅금액 1단계 x {GAME_BAT_PRICE}원 [추세배팅] *TEST ver2.0.6")
-# print(f"✅ 배팅금액 1단계 x {GAME_BAT_PRICE}원, [추세배팅] ver2.0.6")
+# print(f"✅ 배팅금액 1단계 x {GAME_BAT_PRICE}원 [추세배팅] *TEST ver2.0.7")
+print(f"✅ 배팅금액 1단계 x {GAME_BAT_PRICE}원, [추세배팅] ver2.0.7")
 print("▶ A : 시작, S : 정지, D : 슈교체 및 초기화, F : 매크로 초기화")
 
 sorted_chips = sorted(AMOUNT_POS.keys(), reverse=True)
@@ -346,7 +344,7 @@ while True:
         #목표치 확인
         if hole_total_profit >= GAME_FINISH_PRICE:
             print("💰 누적 목표 수익 도달, 매크로 정지")
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             time.sleep(1)
             running = False
             stopped = True
@@ -360,7 +358,7 @@ while True:
         
         if stage >= 500:
             print("💰 손절 스테이지 도달, 매크로 정지")
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             time.sleep(1)
             running = False
             stopped = True
@@ -371,7 +369,7 @@ while True:
             continue
         if(isWaiting):
             print("💹 관전 대기판...")
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
         
         # pos = find_image_on_screen('./newImages/stop.png')
         # if pos:
@@ -391,7 +389,7 @@ while True:
                 isSueRestartChange = True
                 break
             print(f"💹 2판중 {waitingCount}판 대기중...")
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             while not is_image_in_region(images["bet_closed"], wat_region):
                 if stopped:
                     break
@@ -404,7 +402,7 @@ while True:
                     pos = is_image_in_region(images["reissued"], sue_region)
                     if pos:
                         print("💹 슈 교체 한턴 쉬기 및 카운팅 초기화")
-                        print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+                        print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
                         banker_win_count = 0
                         player_win_count = 0
                         bet_target = ''
@@ -449,7 +447,7 @@ while True:
                     result = "TIE"
                     batSize = 1
                     print("💹 무승부 → 다음판으로")
-                    print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+                    print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
                     isPass = True
                     time.sleep(2)
                     break
@@ -466,11 +464,11 @@ while True:
             hole_total_profit =  hole_total_profit + (amount * batSize) - amount
             if(not (restart)): print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count} (승리)")
             print(f"💹 누적 수익: {total_profit}원 / 총 수익: {hole_total_profit}원")
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
             if(hole_total_profit >= GAME_FINISH_PRICE): continue
             if total_profit >= TURN_FINISH_PRICE:
                 print("💰 수익 목표 도달, 데이터 초기화, 2판 대기후 재시작")
-                print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+                print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
                 time.sleep(1)
                 init()
                 restart = True
@@ -482,25 +480,19 @@ while True:
             hole_total_profit =  hole_total_profit - amount
             if(not (restart)): print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count} (패배)")
             print(f"💹 누적 수익: {total_profit}원 / 총 수익: {hole_total_profit}원")
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
         else:
             if(not (restart)): print(f"🏆 결과: {result} 비율 PLAYER {player_win_count} : BANKER {banker_win_count} (관전)")
-            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+            print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
         
-        time.sleep(1)
-                
-        while not is_image_in_region(images["place_bet"], open_region):
-            if stopped:
-                break
-        if stopped:
-            break
+        time.sleep(3)
         
         pos = is_image_in_region(images["reissued"], sue_region)
         if(not restart):
             if(not isSueRestartChange):
                 if pos:
                     print("💹 슈 교체 한턴 쉬기 및 카운팅 초기화")
-                    print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
+                    print("ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ")
                     banker_win_count = 0
                     player_win_count = 0
                     bet_target = ''
@@ -510,6 +502,15 @@ while True:
             else:
                 isSueRestartChange = False
                 
+                
+                
+        while not is_image_in_region(images["place_bet"], open_region):
+            if stopped:
+                break
+        if stopped:
+            break
+        
+        
         if(isWaiting):
             bet_target = ''
             continue
@@ -537,38 +538,38 @@ while True:
                 
                 
             
-        # # 실제 배팅
-        # if(banker_win_count > player_win_count):
-        #     place_bet(BANKER_POS, amount)
-        #     bet_target = "BANKER"
-        # elif(banker_win_count < player_win_count):
-        #     place_bet(PLAYER_POS, amount)
-        #     bet_target = "PLAYER"
-        # else: 
-        #     if(last_restart == "BANKER"):
-        #         bet_target = last_restart
-        #         place_bet(PLAYER_POS, amount)
-        #     else:
-        #         bet_target = last_restart
-        #         place_bet(BANKER_POS, amount)
-        # 테스트
+        # 실제 배팅
         if(banker_win_count > player_win_count):
-            click_at(AMOUNT_POS[100])
-            click_at(BANKER_POS)
+            place_bet(BANKER_POS, amount)
             bet_target = "BANKER"
         elif(banker_win_count < player_win_count):
-            click_at(AMOUNT_POS[100])
-            click_at(PLAYER_POS)
+            place_bet(PLAYER_POS, amount)
             bet_target = "PLAYER"
         else: 
             if(last_restart == "BANKER"):
                 bet_target = last_restart
-                click_at(AMOUNT_POS[100])
-                click_at(BANKER_POS)
+                place_bet(PLAYER_POS, amount)
             else:
                 bet_target = last_restart
-                click_at(AMOUNT_POS[100])
-                click_at(PLAYER_POS)
+                place_bet(BANKER_POS, amount)
+        # # 테스트
+        # if(banker_win_count > player_win_count):
+        #     click_at(AMOUNT_POS[100])
+        #     click_at(BANKER_POS)
+        #     bet_target = "BANKER"
+        # elif(banker_win_count < player_win_count):
+        #     click_at(AMOUNT_POS[100])
+        #     click_at(PLAYER_POS)
+        #     bet_target = "PLAYER"
+        # else: 
+        #     if(last_restart == "BANKER"):
+        #         bet_target = last_restart
+        #         click_at(AMOUNT_POS[100])
+        #         click_at(BANKER_POS)
+        #     else:
+        #         bet_target = last_restart
+        #         click_at(AMOUNT_POS[100])
+        #         click_at(PLAYER_POS)
         
         totalBat += 1
         print(f"🎯 배팅: {bet_target}, 금액: {amount}원, 단계: {stage}단계, 총 배팅: {totalBat}회")
