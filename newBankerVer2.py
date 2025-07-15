@@ -285,8 +285,8 @@ TURN_FINISH_PRICE = get_integer_input("💰 판당 목표 수익 금액을 입�
 GAME_FINISH_PRICE = get_integer_input("🛑 매크로 정지 수익 금액을 입력하세요 (예: 850): ")
 GAME_BAT_PRICE = get_integer_input("▷ 판당 배팅 금액을 입력하세요 (예: 500): ")
 print(f"판당 목표 수익 : {TURN_FINISH_PRICE} / 매크로 정지수익 : {GAME_FINISH_PRICE}")
-# print(f"✅ 배팅금액 1단계 x {GAME_BAT_PRICE}원 [추세배팅] *TEST ver2.0.3")
-print(f"✅ 배팅금액 1단계 x {GAME_BAT_PRICE}원, [추세배팅] ver2.0.3")
+print(f"✅ 배팅금액 1단계 x {GAME_BAT_PRICE}원 [추세배팅] *TEST ver2.0.6")
+# print(f"✅ 배팅금액 1단계 x {GAME_BAT_PRICE}원, [추세배팅] ver2.0.6")
 print("▶ A : 시작, S : 정지, D : 슈교체 및 초기화, F : 매크로 초기화")
 
 sorted_chips = sorted(AMOUNT_POS.keys(), reverse=True)
